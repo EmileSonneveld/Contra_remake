@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Contra", "Contra.vcxproj", "{00DB854E-9024-4D50-860E-BC75F3DC5351}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{00DB854E-9024-4D50-860E-BC75F3DC5351}.Debug|Win32.ActiveCfg = Debug|Win32
+		{00DB854E-9024-4D50-860E-BC75F3DC5351}.Debug|Win32.Build.0 = Debug|Win32
+		{00DB854E-9024-4D50-860E-BC75F3DC5351}.Release|Win32.ActiveCfg = Release|Win32
+		{00DB854E-9024-4D50-860E-BC75F3DC5351}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

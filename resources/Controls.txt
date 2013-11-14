@@ -1,0 +1,7 @@
+O/P 	: scale viewport
+R	: reset objectlist
+B	: naar EndBoss
+
+arrows	: Move
+Z	: shoot
+X	: Jump

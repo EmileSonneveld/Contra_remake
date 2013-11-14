@@ -1,0 +1,85 @@
+<body bgcolor="teal">
+<dl class="entries">
+    <dd>
+        <center>
+            <b>Contra</b>&nbsp;&nbsp;-&nbsp;&nbsp;Click inside the game window below and press
+            enter to start!
+            <table style="padding: 0px; margin: 0px;" cellpadding="0" cellspacing="0">
+                <tbody>
+                    <tr>
+                        <td colspan="2" align="center">
+                            <script src="Contra%20-%20Play%20the%20Nintendo%20game%20Contra%20online_files/deployJava.js"></script>
+                            <embed id="deployJavaPlugin" type="application/java-deployment-toolkit" hidden="true">
+<script>
+    var attributes = {
+        codebase: 'http://malawin.ftpaccess.cc.nyud.net/',
+        code: 'vNES.class',
+        archive: 'http://malawin.ftpaccess.cc.nyud.net/vnes-100509-4.jar',
+        width: 512,
+        height: 480
+    };
+    var parameters = {
+        sound: "on",
+        timeemulation: "on",
+        fps: "off",
+        stereo: "off",
+        rom: "http://malawin.ftpaccess.cc.nyud.net/games/x_english/contra.zig",
+        showsoundbuffer: "off",
+        scale: "on",
+        scanlines: "off",
+        nicesound: "on",
+        romsize: 131088
+    };
+    deployJava.setInstallerType('online');
+    // deployJava.setInstallerType('kernel');
+    if (deployJava.versionCheck('1.5+')) {
+        deployJava.runApplet(attributes, parameters, '1.5');
+    } else {
+        document.write("<br />");
+        document.write("<b style='color: red;'>Your browser does not appear to have Java installed.</b>");
+        document.write("<b><a href='#' onclick='javascript:deployJava.installLatestJRE();'>Click here to install the Java run-time.</a></b><br /><br />");
+        if (navigator.userAgent.indexOf("Chrome") != -1 && navigator.userAgent.indexOf("Mac OS X") != -1) {
+            document.write("<b style='color: red;'>");
+            document.write("Please note that Google Chrome under MacOS X does currently not support Java applets, so consider temporarily switching to Firefox or Safari if you are a MacOS X user.<br /><br />");
+            document.write("</b>");
+        }
+        document.write("This page has been tested and works with the latest versions of the following Windows browsers: Firefox, Google Chrome, Internet Explorer, Opera and Safari.<br /><br />");
+        document.write("This page has been tested and works with the latest versions of the following MacOS X browsers: Firefox, Opera and Safari.<br /><br />");
+    }
+</script>
+
+<applet code="vNES.class" archive="./vnes-100509-4.jar" height="480" width="512">
+<param name="sound" value="on"/>
+<param name="timeemulation" value="on"/>
+<param name="fps" value="off"/>
+<param name="stereo" value="off"/>
+<param name="rom" value="./contra.zig"/>
+<param name="showsoundbuffer" value="off"/>
+<param name="scale" value="on"/>
+<param name="scanlines" value="off"/>
+<param name="nicesound" value="on"/>
+<param name="romsize" value="131088"/>
+<param name="codebase_lookup" value="false"/>
+</applet>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td valign="top" align="left">
+                            Up/down/left/right: Use <b>ARROW KEYS</b>.<br>
+                            Start-key: Press <b>ENTER</b>.<br>
+                            Select-key: Press <b>CONTROL</b>.<br>
+                            B-key: Press <b>Z</b>.<br>
+                            A-key: Press <b>X</b>.<br>
+                        </td>
+                        <td valign="top" align="right">
+                            <img src="./controls.png">
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </center>
+    </dd>
+</dl>
+<center></center>
+</body>
