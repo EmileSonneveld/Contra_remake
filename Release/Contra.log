@@ -1,0 +1,53 @@
+﻿Build started 14/11/2013 14:30:49.
+     1>Project "C:\Users\Emile\Documents\Contra_remake_repo\Contra.vcxproj" on node 2 (Build target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /Zi /nologo /W3 /WX- /O2 /Oi /Oy- /GL /D WIN32 /D NDEBUG /D _WINDOWS /D _UNICODE /D UNICODE /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Release\\" /Fd"Release\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt Code\AbstractGame.cpp Code\BosSniper.cpp Code\Box.cpp Code\Bridge.cpp Code\Bullet.cpp Code\Contra.cpp Code\EnemyWalking.cpp Code\EvilTurret.cpp Code\Explosion.cpp Code\EndBoss.cpp Code\FlyingPuwerUp.cpp Code\GameEngine.cpp Code\GameWinMain.cpp Code\ObjectBaseList.cpp Code\PowerUp.cpp Code\EnemySniper.cpp Code\Player.cpp Code\PowerUpBox.cpp
+         AbstractGame.cpp
+         BosSniper.cpp
+         Box.cpp
+         Bridge.cpp
+         Bullet.cpp
+         Contra.cpp
+         EnemyWalking.cpp
+     1>Code\EnemyWalking.cpp(146): warning C4146: unary minus operator applied to unsigned type, result still unsigned
+         EvilTurret.cpp
+         Explosion.cpp
+         EndBoss.cpp
+         FlyingPuwerUp.cpp
+         GameEngine.cpp
+         GameWinMain.cpp
+         ObjectBaseList.cpp
+         PowerUp.cpp
+         EnemySniper.cpp
+         Player.cpp
+         PowerUpBox.cpp
+       ResourceCompile:
+         C:\Program Files (x86)\Windows Kits\8.0\bin\x86\rc.exe /D _UNICODE /D UNICODE /l"0x0409" /nologo /fo"Release\Contra.res" Contra.rc 
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Emile\Documents\Contra_remake_repo\Contra_LastRelease.exe" /INCREMENTAL:NO /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Emile\Documents\Contra_remake_repo\Contra_LastRelease.pdb" /SUBSYSTEM:WINDOWS /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Emile\Documents\Contra_remake_repo\Contra_LastRelease.lib" /MACHINE:X86 /SAFESEH Release\Contra.res
+         Release\AbstractGame.obj
+         Release\BosSniper.obj
+         Release\Box.obj
+         Release\Bridge.obj
+         Release\Bullet.obj
+         Release\Contra.obj
+         Release\EnemyWalking.obj
+         Release\EvilTurret.obj
+         Release\Explosion.obj
+         Release\EndBoss.obj
+         Release\FlyingPuwerUp.obj
+         Release\GameEngine.obj
+         Release\GameWinMain.obj
+         Release\ObjectBaseList.obj
+         Release\PowerUp.obj
+         Release\EnemySniper.obj
+         Release\Player.obj
+         Release\PowerUpBox.obj
+         Generating code
+         Finished generating code
+         Contra.vcxproj -> C:\Users\Emile\Documents\Contra_remake_repo\Contra_LastRelease.exe
+     1>Done Building Project "C:\Users\Emile\Documents\Contra_remake_repo\Contra.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:17.81
