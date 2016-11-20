@@ -89,13 +89,7 @@ private:
 	//Grid *m_GridPtr;
 
 	// Power up's constants
-	int m_BulletType; // eigenlijk powerUpType
-	static const int BULLET_NORMAL = 0;
-	static const int BULLET_MITRAILLEUR = 1;
-	static const int BULLET_SUPER = 2;
-	static const int BULLET_LAZER = 3;
-	static const int BULLET_FLAME = 4;
-	static const int BULLET_R = 5; // Score ofzo?
+	BulletType m_BulletType; // eigenlijk powerUpType
 
 	void PlaceEnemies(ObjectList * objectListPtr);
 

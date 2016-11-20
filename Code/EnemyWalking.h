@@ -26,15 +26,17 @@ public:
 
 
 private:
+	enum EnemyWalkingState {
+		STATE_NORMAL = 0,
+		STATE_JUMP = 2,
+		STATE_DIE = 5,
+	};
 	//-------------------------------------------------
 	// Datamembers
 	//-------------------------------------------------
 	DOUBLE2 m_PointingDir;
 
-	int m_State; // +/- idem aan Player
-	static const int STATE_NORMAL = 0;
-	static const int STATE_JUMP = 2;
-	static const int STATE_DIE = 5;
+	EnemyWalkingState m_State;
 
 	double m_AnimationTick;
 	double m_TimeToDie;

@@ -14,7 +14,7 @@
 //---------------------------
 Bitmap * FlyingPuwerUp::m_BmpSpritePtr = 0;
 
-FlyingPuwerUp::FlyingPuwerUp(DOUBLE2 pos, int powerUpType) : ObjectBase(pos), m_AnimationTick(0), m_Activated(0), m_Velocity()
+FlyingPuwerUp::FlyingPuwerUp(DOUBLE2 pos, BulletType powerUpType) : ObjectBase(pos), m_AnimationTick(0), m_Activated(0), m_Velocity()
 {
 	m_Type = TYPE_ENEMY;
 
@@ -61,19 +61,19 @@ void FlyingPuwerUp::Tick(double deltaTime)
 
 
 	if (m_Activated) {
-		DOUBLE2 schetmRechtsOnder = (*m_MatViewPtr).Inverse().TransformPoint(DOUBLE2(GAME_ENGINE->GetWidth(), GAME_ENGINE->GetHeight()));
+		DOUBLE2 screenRightDown = (*m_MatViewPtr).Inverse().TransformPoint(DOUBLE2(GAME_ENGINE->GetWidth(), GAME_ENGINE->GetHeight()));
 		m_Velocity.y += 8 * Sign(m_OriginalY - m_Pos.y);
 		m_Pos += m_Velocity*deltaTime;
 		m_HitRegionPtr->SetPos(m_Pos);
-		if (m_Pos.x > schetmRechtsOnder.x) {
+		if (m_Pos.x > screenRightDown.x) {
 			m_ObjectListPtr->Delete(this); // suicide
 			return;
 		}
 
 	}
 	else { // sleeping...
-		DOUBLE2 schetmLingsBoven = (*m_MatViewPtr).Inverse().TransformPoint(DOUBLE2());
-		if (m_Pos.x + m_SpriteSize.x < schetmLingsBoven.x) {
+		DOUBLE2 screenLeftTop = (*m_MatViewPtr).Inverse().TransformPoint(DOUBLE2());
+		if (m_Pos.x + m_SpriteSize.x < screenLeftTop.x) {
 			m_Activated = true;
 			m_Velocity.x = 130;
 		}

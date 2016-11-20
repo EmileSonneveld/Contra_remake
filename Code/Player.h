@@ -28,7 +28,7 @@ public:
 	virtual void CollideWith(ObjectBase *colliderptr);
 
 	void SetGlobalVars(ObjectList *objectListPtr, DOUBLE2 LevelMax);
-	void SetPowerup(int bulletType) {
+	void SetPowerup(BulletType bulletType) {
 		if (bulletType != BULLET_R)m_BulletType = bulletType;
 		if (bulletType == -1) DebugBreak();
 	}
@@ -42,29 +42,26 @@ public:
 
 private:
 
+	enum PlayerState
+	{
+		STATE_NORMAL = 0,
+		STATE_CRAWL = 1,
+		STATE_JUMP = 2,
+		STATE_SWIM = 3,
+		STATE_DIVE = 4,
+		STATE_DIE = 5,
+	};
+
 	//-------------------------------------------------
 	// Datamembers
 	//-------------------------------------------------
 
 	// Power up's constants
-	int m_BulletType;
-	static const int BULLET_NORMAL = 0;
-	static const int BULLET_MITRAILLEUR = 1;
-	static const int BULLET_SUPER = 2;
-	static const int BULLET_LAZER = 3;
-	static const int BULLET_FLAME = 4;
-	static const int BULLET_R = 5; // Score ofzo?
+	BulletType m_BulletType;
 
 
 	/// VOOR DE SPRITES ///
-	int m_State;
-	static const int STATE_NORMAL = 0;
-	static const int STATE_CRAWL = 1;
-	static const int STATE_JUMP = 2;
-	static const int STATE_SWIM = 3;
-	static const int STATE_DIVE = 4;
-	static const int STATE_DIE = 5;
-	static const int STATE_DEAD = 5;
+	PlayerState m_State;
 
 	static Bitmap *m_BmpSpritePtr;
 	DOUBLE2 m_BodySize, m_LegsSize, m_BBoxSize;

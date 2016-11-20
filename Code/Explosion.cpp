@@ -60,7 +60,7 @@ void Explosion::Tick(double deltaTime)
 {
 	m_AnimationTik += 0.1;
 	if (m_AnimationTik > 4) {
-		m_ObjectListPtr->Delete(this); // suieside!
+		m_ObjectListPtr->Delete(this); // suicide!
 	}
 }
 

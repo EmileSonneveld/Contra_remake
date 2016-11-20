@@ -12,7 +12,7 @@
 class Bullet : public ObjectBase
 {
 public:
-	Bullet(DOUBLE2 pos, DOUBLE2 velocity, int team, int bulletType);
+	Bullet(DOUBLE2 pos, DOUBLE2 velocity, ObjectType team, BulletType bulletType);
 	virtual ~Bullet();
 
 	//-------------------------------------------------
@@ -29,12 +29,7 @@ private:
 	//-------------------------------------------------
 
 	// Power up's constants
-	int m_BulletType;
-	static const int BULLET_NORMAL = 0;
-	static const int BULLET_MITRAILLEUR = 1;
-	static const int BULLET_SUPER = 2;
-	static const int BULLET_LAZER = 3;
-	static const int BULLET_FLAME = 4;
+	BulletType m_BulletType;
 
 	double m_Scale;
 

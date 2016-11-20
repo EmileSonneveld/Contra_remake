@@ -13,7 +13,7 @@
 //---------------------------
 Bitmap * PowerUp::m_BmpSpritePtr = 0;
 
-PowerUp::PowerUp(DOUBLE2 pos, int type) : ObjectBase(pos), m_Velocity(50 - rand() % 40, -200)
+PowerUp::PowerUp(DOUBLE2 pos, BulletType type) : ObjectBase(pos), m_Velocity(50 - rand() % 40, -200)
 {
 	m_Type = TYPE_POWERUP;
 	m_BulletType = type;
@@ -71,7 +71,7 @@ void PowerUp::CollideWith(ObjectBase *colliderptr) {
 			OutputDebugString("\n m_PlayerPtr not set at creation.");
 			DebugBreak();
 		}
-		m_PlayerPtr->SetPowerup(m_BulletType); // Hier is een bug!!!!!
+		m_PlayerPtr->SetPowerup(m_BulletType); // Could have a problem?
 		m_ObjectListPtr->Delete(this);
 	}
 }

@@ -13,7 +13,7 @@
 class FlyingPuwerUp : public ObjectBase
 {
 public:
-	FlyingPuwerUp(DOUBLE2 pos, int powerUpType);
+	FlyingPuwerUp(DOUBLE2 pos, BulletType powerUpType);
 	virtual ~FlyingPuwerUp();
 
 	//-------------------------------------------------
@@ -31,13 +31,7 @@ private:
 	//-------------------------------------------------
 	static Bitmap *m_BmpSpritePtr;
 
-	int m_PowerUpType; // eigenlijk powerUpType
-	static const int BULLET_NORMAL = 0;
-	static const int BULLET_MITRAILLEUR = 1;
-	static const int BULLET_SUPER = 2;
-	static const int BULLET_LAZER = 3;
-	static const int BULLET_FLAME = 4;
-	static const int BULLET_R = 5; // Score ofzo?
+	BulletType m_PowerUpType; // eigenlijk powerUpType
 
 
 	double m_AnimationTick;

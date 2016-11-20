@@ -30,7 +30,7 @@ private:
 	static Bitmap *m_BmpSprite1Ptr;
 	static Bitmap *m_BmpSprite2Ptr;
 
-	Bitmap *m_BmpSpritePtr; // plaatselijke copie
+	Bitmap *m_BmpSpritePtr;
 
 	double m_AnimationTik;
 

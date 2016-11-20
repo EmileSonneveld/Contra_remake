@@ -81,7 +81,7 @@ void HiddenSniper::Tick(double deltaTime)
 			DOUBLE2 shootPos;
 			shootPos.x = m_Pos.x + m_XScale * 18;
 			shootPos.y = m_Pos.y - 7;
-			ObjectBase *bulletPtr = new Bullet(shootPos, DOUBLE2(m_XScale * 100, 0), TYPE_ENEMY_BULLET, 0);
+			ObjectBase *bulletPtr = new Bullet(shootPos, DOUBLE2(m_XScale * 100, 0), TYPE_ENEMY_BULLET, BULLET_NORMAL);
 			m_ObjectListPtr->Add(bulletPtr);
 		}
 	}

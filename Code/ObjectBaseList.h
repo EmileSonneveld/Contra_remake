@@ -6,8 +6,31 @@
 #include "GameEngine.h"
 #include <vector>
 
+
+enum BulletType {
+	BULLET_NORMAL = 0,
+	BULLET_MITRAILLEUR = 1,
+	BULLET_SUPER = 2,
+	BULLET_LAZER = 3,
+	BULLET_FLAME = 4,
+	BULLET_R = 5, // Just for score?
+};
+
+enum ObjectType {
+	TYPE_NOT_SET = -1,
+	TYPE_NO_COLLITION = 00,
+	TYPE_POWERUP = 01,
+	TYPE_PLAYER_BULLET = 10,
+	TYPE_PLAYER = 11,
+	TYPE_ENEMY_BULLET = 20,
+	TYPE_ENEMY = 21,
+	TYPE_ENEMY_BOX = 22,
+	TYPE_ENEMY_WALKING = 23,
+};
+
+
 //-----------------------------------------------------------------
-//  My first Forward Declarations!!! d=D
+//  Forward declarations
 //-----------------------------------------------------------------
 class ObjectBase;
 class ObjectList;
@@ -39,21 +62,17 @@ public:
 	}
 	HitRegion *GetHitRegion() { return m_HitRegionPtr; }
 
-	int GetType() { return m_Type; }
+	ObjectType GetType() { return m_Type; }
+	//bool stagedForDeletion = false;
 
 protected:
 	//static Bitmap *m_BmpSpritePtr;
 	DOUBLE2 m_Pos;
-	int m_Type; // 0: onpartijdig, 1: speler, 2:vijand
-	static const int TYPE_NOT_SET = -1;
-	static const int TYPE_NO_COLLITION = 00;
-	static const int TYPE_POWERUP = 01;
-	static const int TYPE_PLAYER_BULLET = 10;
-	static const int TYPE_PLAYER = 11;
-	static const int TYPE_ENEMY_BULLET = 20;
-	static const int TYPE_ENEMY = 21;
-	static const int TYPE_ENEMY_BOX = 22;
-	static const int TYPE_ENEMY_WALKING = 23;
+
+	// [0-9] Neutral
+	// [10-19] Player
+	// [20-29] Enemy
+	ObjectType m_Type;
 
 	DOUBLE2 m_SpriteSize;
 	MATRIX3X2 *m_MatViewPtr;
@@ -90,7 +109,6 @@ public:
 	// Own methods
 	//-------------------------------------------------
 	int Add(ObjectBase * objectPtr); //Player
-	bool Delete(int plaats);
 	bool Delete(ObjectBase *objPtr);
 
 	void Tick(double deltaTime);
@@ -107,9 +125,12 @@ private:
 	//-------------------------------------------------
 	//static const int ARR_MAX=100;
 	//ObjectBase * m_ObjectPtr[ARR_MAX];
+	bool DeleteNow(int plaats);
 
 	vector<ObjectBase*> m_ObjectPtrVect;
+	vector<ObjectBase*> m_ObjectPtrToDeleteVect;
 
+	void DeleteStagedObjects();
 	int m_ObjectCount; // optioneel
 
 	// voor de inzittende objecten:

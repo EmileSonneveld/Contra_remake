@@ -25,15 +25,19 @@ public:
 	void SetPlayerPtr(Player *playerPtr) { m_PlayerPtr = playerPtr; }
 
 private:
+
+	enum BoxState {
+		STATE_NORMAL = 0,
+		STATE_SHOOTING = 1,
+		STATE_DESACTACTIVATE = 2,
+	};
+
 	//-------------------------------------------------
 	// Datamembers
 	//-------------------------------------------------
 	int m_bulletsToShoot;
 
-	int m_State;
-	static const int STATE_NORMAL = 0;
-	static const int STATE_SHOOTING = 1;
-	static const int STATE_DESACTACTIVATE = 2;
+	BoxState m_State;
 
 	static Bitmap *m_BmpSpritePtr;
 

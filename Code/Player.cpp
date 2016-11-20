@@ -27,9 +27,8 @@ Player::Player(int x, int y) :ObjectBase(DOUBLE2(x, y))
 	m_PointingDir.y = 0;
 	m_OnGround = false;
 
-	if (m_BmpSpritePtr == 0) { // Load the bitmap:
+	if (m_BmpSpritePtr == 0) {
 		m_BmpSpritePtr = new Bitmap("./resources/Player.png");
-		//m_BmpSpritePtr->SetTransparencyColor(0, 128, 0);
 	}
 
 	m_State = STATE_NORMAL;
@@ -40,7 +39,7 @@ Player::Player(int x, int y) :ObjectBase(DOUBLE2(x, y))
 	m_BodySize.y = 33;
 	m_LegsSize.x = 21;
 	m_LegsSize.y = 20;
-	m_BBoxSize.x = max(m_BodySize.x, m_LegsSize.x); // tijdelijk
+	m_BBoxSize.x = max(m_BodySize.x, m_LegsSize.x); // tmp
 	m_BBoxSize.y = m_LegsSize.y;
 
 	m_SpriteSize.x = 15;
@@ -50,8 +49,6 @@ Player::Player(int x, int y) :ObjectBase(DOUBLE2(x, y))
 	m_HitBBoxV->CreateFromRect(-3, -m_BBoxSize.y, 6, m_BBoxSize.y);
 
 	m_HitRegionPtr->CreateFromRect(-m_SpriteSize.x / 2, -m_SpriteSize.y, m_SpriteSize.x, m_SpriteSize.y);
-
-
 }
 
 Player::~Player()
@@ -127,9 +124,9 @@ void Player::DieAndRespawn() {
 
 	--m_Lives;
 
-	DOUBLE2 schetmLingsBoven = (*m_MatViewPtr).Inverse().TransformPoint(DOUBLE2());
-	//DOUBLE2 schetmRechtsOnder= (*m_MatViewPtr).Inverse().TransformPoint( DOUBLE2(GAME_ENGINE->GetWidth(), GAME_ENGINE->GetHeight()) );
-	m_Pos = schetmLingsBoven + DOUBLE2(30, -40);
+	DOUBLE2 screenLeftTop = (*m_MatViewPtr).Inverse().TransformPoint(DOUBLE2());
+	//DOUBLE2 screenRightDown= (*m_MatViewPtr).Inverse().TransformPoint( DOUBLE2(GAME_ENGINE->GetWidth(), GAME_ENGINE->GetHeight()) );
+	m_Pos = screenLeftTop + DOUBLE2(30, -40);
 	m_InvincebleTimer = 3; // can't toutch this! in seconds
 
 }
@@ -141,7 +138,7 @@ void Player::Tick(double deltaTime)
 		m_InvincebleTimer -= deltaTime;
 
 
-	// BASIC MOVEMENTS ------------------------------------------------------------------------ BASIC MOVEMENTS ----
+	// BASIC MOVEMENTS
 	m_Velocity.y += 900 * deltaTime; // Gravity.
 	m_Pos += m_Velocity*deltaTime;
 	m_Velocity.x *= 0.8; // Friction.
@@ -149,7 +146,7 @@ void Player::Tick(double deltaTime)
 	//m_HitBBoxH->SetPos(m_Pos);
 
 
-	// COLLISIONS WITH THE GROUND ------------------------------------------------------------- COLLISIONS WITH THE GROUND ----
+	// COLLISIONS WITH THE GROUND
 	if (m_Colide) {
 		m_OnGround = false;
 		for (unsigned int i = 0; i < m_LevelHitRegions.size(); ++i) {
@@ -163,7 +160,7 @@ void Player::Tick(double deltaTime)
 
 
 
-	// Binnen de harde grenzen blijven: ----------------------------------------------
+	// Stay within boundaries: ----------------------------------------------
 	m_Pos.x = min(m_LevelMax.x, max(0, m_Pos.x));
 	m_Pos.y = min(m_LevelMax.y + 60, max(0, m_Pos.y));
 	if (m_Pos.x >= m_LevelMax.x)
@@ -175,7 +172,7 @@ void Player::Tick(double deltaTime)
 	}
 
 
-	// Dood? Stop dan hier! ----------------------------------------------------------- Dood? Stop dan hier! ----
+	// Dood? Stop dan hier! 
 	if (m_State == STATE_DIE) {
 		m_TimeToDie -= deltaTime;
 		if (m_TimeToDie <= 0) {
@@ -205,17 +202,17 @@ void Player::Tick(double deltaTime)
 
 
 
-	// CONTROLS ---------------------------------------------------------------------- CONTROLS ----
+	// CONTROLS 
 	if (GAME_ENGINE->IsKeyDown('B')) {
 		m_Pos.x = m_LevelMax.x - 300;
 		m_Pos.y = 20;
 	}
 
 
-	// JUMPEN -------------------------
+	// JUMP -------------------------
 	if (GAME_ENGINE->IsKeyDown('X') && !GAME_ENGINE->IsKeyDown(VK_DOWN)) { Jump(300); }
 
-	if (m_OnGround) { // BEWEGEN -----------------------------
+	if (m_OnGround) { // MOVE
 
 		if ((GAME_ENGINE->IsKeyDown(VK_RIGHT) || m_AutomaticFinalRun) || GAME_ENGINE->IsKeyDown(VK_LEFT)) { // gewone lings en rechtes
 			//if( !GAME_ENGINE->IsKeyDown(VK_DOWN) ){
@@ -226,20 +223,20 @@ void Player::Tick(double deltaTime)
 		}
 
 	}
-	else { // springend bewgen
+	else { // MOVE in the air
 		if ((GAME_ENGINE->IsKeyDown(VK_RIGHT) || m_AutomaticFinalRun) || GAME_ENGINE->IsKeyDown(VK_LEFT))
 			m_Velocity.x = WALKSPEED*0.8 * m_PointingDir.x;
 	}
 
 
-	if (m_Colide == false) { // hij is door een platform aan het vallen
+	if (m_Colide == false) { // Falling trough a platform
 		int clolliding = false;
 		for (unsigned int i = 0; i < m_LevelHitRegions.size(); ++i) {
 			if (m_HitBBoxV->HitTest(m_LevelHitRegions.at(0))) // niet bukken op de brug...
 				clolliding = true;
 		}
 		if (!clolliding) {
-			m_Colide = true; // just er door gevallen
+			m_Colide = true; // Just fell trough a platform
 		}
 		if (GAME_ENGINE->IsKeyDown('H')) m_Colide = true; // DEBUG
 	}
@@ -249,16 +246,16 @@ void Player::Tick(double deltaTime)
 
 
 	if (!GAME_ENGINE->IsKeyDown('G')) { // GOD MODE
-		DOUBLE2 schetmLingsBoven = (*m_MatViewPtr).Inverse().TransformPoint(DOUBLE2());
-		m_Pos.x = max(schetmLingsBoven.x, m_Pos.x); // niet meer naar lings kunnen.
+		DOUBLE2 screenLeftTop = (*m_MatViewPtr).Inverse().TransformPoint(DOUBLE2());
+		m_Pos.x = max(screenLeftTop.x, m_Pos.x); // Can't go more o the left
 	}
 
 
 	CalculateBulletSpawn();
 
 
-	// SCHIETEN --------------------------------------------------------------
-	m_ShootCounter += deltaTime; // in secondes
+	// SHOOT --------------------------------------------------------------
+	m_ShootCounter += deltaTime; // in seconds
 
 	if (GAME_ENGINE->IsKeyDown('Z')) Shoot();
 
@@ -317,12 +314,12 @@ void Player::Shoot()
 void Player::CalculateStateAndFrame() {
 
 	if (!m_OnGround) {
-		int onderMarge = 8;// Ondaraan in de map (Water/Kliff)
-		double groundDist = m_LevelMax.y - onderMarge - (m_Pos.y);
-		if (groundDist < 0) {
-			if (m_Pos.x < m_LevelMax.x / 2 + 100) {// in het water
+		int bottomMargin = 8; // Bottom of the level (Water/Kliff)
+		double groundDistance = m_LevelMax.y - bottomMargin - (m_Pos.y);
+		if (groundDistance < 0) {
+			if (m_Pos.x < m_LevelMax.x / 2 + 100) { // Before a certain point there is water at the bottom
 				m_Velocity.y = 0;
-				m_Pos.y = m_LevelMax.y - onderMarge;
+				m_Pos.y = m_LevelMax.y - bottomMargin;
 				m_State = STATE_SWIM;
 				m_Colide = true;
 				m_OnGround = true;
@@ -331,13 +328,13 @@ void Player::CalculateStateAndFrame() {
 	}
 
 
-	if (m_OnGround) { // on the ground (of in het water)
+	if (m_OnGround) { // on the ground (or in water)
 
 		if ((GAME_ENGINE->IsKeyDown(VK_RIGHT) || m_AutomaticFinalRun) || GAME_ENGINE->IsKeyDown(VK_LEFT))
 		{
 			if (m_State == STATE_SWIM || m_State == STATE_DIVE)
 			{
-				//nix speciaal
+				// Nothing special
 			}
 			else
 			{
@@ -352,19 +349,18 @@ void Player::CalculateStateAndFrame() {
 			{
 				if (m_State == STATE_SWIM) m_State = STATE_DIVE;
 				if (m_State != STATE_DIVE) m_State = STATE_CRAWL;
-				if (GAME_ENGINE->IsKeyDown('X')) { m_Colide = false; } // laten vallen
+				if (GAME_ENGINE->IsKeyDown('X')) { m_Colide = false; } // Let the plater fall trought the level
 			}
 			else
 			{
 				if (m_State == STATE_DIVE) m_State = STATE_SWIM;
 				if (m_State != STATE_SWIM) m_State = STATE_NORMAL; // no up or down
-
 			}
 		}
 
 
 
-		m_BodyFrame = 1; // BodyFrame Bepalen ---------------------------------------------------
+		m_BodyFrame = 1; // Dedermine BodyFrame  ---------------------------------------------------
 
 		if ((GAME_ENGINE->IsKeyDown(VK_RIGHT) || m_AutomaticFinalRun) || GAME_ENGINE->IsKeyDown(VK_LEFT))
 		{
@@ -391,11 +387,11 @@ void Player::CalculateStateAndFrame() {
 
 void Player::CalculateBulletSpawn()
 {
-	// POINTING DIR RAFINEREN
+	// Determine better POINTING DIRECTION
 	m_BulletDir = m_PointingDir;
 	if (GAME_ENGINE->IsKeyDown(VK_UP) || GAME_ENGINE->IsKeyDown(VK_DOWN)) {
 		if (!(GAME_ENGINE->IsKeyDown(VK_RIGHT) || m_AutomaticFinalRun) && !GAME_ENGINE->IsKeyDown(VK_LEFT)) {
-			m_BulletDir.x = 0; // geen L of R
+			m_BulletDir.x = 0; // no L or R
 		}
 		if (m_State == STATE_CRAWL) {
 			m_BulletDir.x = m_PointingDir.x;
@@ -404,12 +400,12 @@ void Player::CalculateBulletSpawn()
 	}
 
 
-	// SCHIET POS BEPALEN --------------------------------------------------------------
+	// Determine shooting position --------------------------------------------------------------
 	m_CenterPos = m_Pos;
 	m_CenterPos.y -= m_LegsSize.y;
 
 
-	int xDis = 0; // hoe ver van de symmetrie lijn
+	int xDis = 0; // How far from the symetry line
 
 	switch (m_State) {
 	case STATE_NORMAL:
@@ -422,7 +418,6 @@ void Player::CalculateBulletSpawn()
 			m_BulletSpawn.y = m_CenterPos.y - 5;
 			xDis = 12;
 		}
-		// Hier moet meer blahblah...
 		break;
 
 	case STATE_CRAWL:
@@ -454,7 +449,6 @@ void Player::CalculateBulletSpawn()
 	}
 
 	m_BulletSpawn.x = m_CenterPos.x + m_PointingDir.x*xDis;
-
 }
 
 
@@ -469,14 +463,7 @@ void Player::Paint()
 	//DoCollitions(&m_HitBBoxH, &m_HitBBoxV, &m_Pos, &m_Velocety);
 
 
-	if (m_InvincebleTimer > 0) {
-		if (rand() % 4 < 3) {
-			//--//--//--//--//
-			DrawPlayer();   // large script
-			//--//--//--//--//
-		}
-	}
-	else {
+	if (m_InvincebleTimer <= 0 || rand() % 4 < 3) {
 		//--//--//--//--//
 		DrawPlayer();   // large script
 		//--//--//--//--//
@@ -484,8 +471,8 @@ void Player::Paint()
 
 
 	GAME_ENGINE->SetTransformMatrix(*m_MatViewPtr);
-	DOUBLE2 schetmLingsBoven = (*m_MatViewPtr).Inverse().TransformPoint(DOUBLE2());
-	//DOUBLE2 schetmRechtsOnder= (*m_MatViewPtr).Inverse().TransformPoint( DOUBLE2(GAME_ENGINE->GetWidth(), GAME_ENGINE->GetHeight()) );
+	DOUBLE2 screenLeftTop = (*m_MatViewPtr).Inverse().TransformPoint(DOUBLE2());
+	//DOUBLE2 screenRightDown= (*m_MatViewPtr).Inverse().TransformPoint( DOUBLE2(GAME_ENGINE->GetWidth(), GAME_ENGINE->GetHeight()) );
 
 	GAME_ENGINE->SetColor(5, 2, 255, 100);
 	DOUBLE2 MedailSize(8, 16);
@@ -496,8 +483,8 @@ void Player::Paint()
 	clip.bottom = clip.top + MedailSize.y;
 
 	for (int i = 0; i < m_Lives; ++i) {
-		//GAME_ENGINE->FillRect(schetmLingsBoven.x+10 + MedailSize.x*1.5*i, schetmLingsBoven.y+ 10, MedailSize.x, MedailSize.y);
-		GAME_ENGINE->DrawBitmap(m_BmpSpritePtr, schetmLingsBoven.x + 4 + MedailSize.x*1.2*i, schetmLingsBoven.y + 1, clip);
+		//GAME_ENGINE->FillRect(screenLeftTop.x+10 + MedailSize.x*1.5*i, screenLeftTop.y+ 10, MedailSize.x, MedailSize.y);
+		GAME_ENGINE->DrawBitmap(m_BmpSpritePtr, screenLeftTop.x + 4 + MedailSize.x*1.2*i, screenLeftTop.y + 1, clip);
 	}
 }
 
@@ -509,7 +496,6 @@ void Player::DrawPlayer() {
 	RECT2 clip;
 	DOUBLE2 croawlSize(34, 17), jumpSize(20, 16), swimSize(17, 15);
 
-	/// EN NU DE GROTSTE SCITCH VAN MIJN LEVEN:
 	switch (m_State) {
 
 	case STATE_CRAWL:
@@ -525,7 +511,7 @@ void Player::DrawPlayer() {
 		clip.bottom = clip.top + croawlSize.y;
 
 		GAME_ENGINE->SetTransformMatrix(matCenter*matScale*matTranslate*(*m_MatViewPtr));
-		GAME_ENGINE->DrawBitmap(m_BmpSpritePtr, 0, 0, clip); // Finaly, draw the bitmap
+		GAME_ENGINE->DrawBitmap(m_BmpSpritePtr, 0, 0, clip);
 		break;
 
 	case STATE_NORMAL:
@@ -540,7 +526,7 @@ void Player::DrawPlayer() {
 		clip.bottom = clip.top + m_LegsSize.y;
 
 		GAME_ENGINE->SetTransformMatrix(matCenter*matScale*matTranslate*(*m_MatViewPtr));
-		GAME_ENGINE->DrawBitmap(m_BmpSpritePtr, 0, 0, clip); // Finaly, draw the bitmap
+		GAME_ENGINE->DrawBitmap(m_BmpSpritePtr, 0, 0, clip);
 
 		// BODY ---------------------------------------------------------------------------------------------
 		matCenter.SetAsTranslate(-m_BodySize.x / 2, -m_BodySize.y);
@@ -553,13 +539,13 @@ void Player::DrawPlayer() {
 		clip.bottom = clip.top + m_BodySize.y;
 
 		GAME_ENGINE->SetTransformMatrix(matCenter*matScale*matTranslate*(*m_MatViewPtr));
-		GAME_ENGINE->DrawBitmap(m_BmpSpritePtr, 0, 0, clip); // Finaly, draw the bitmap
+		GAME_ENGINE->DrawBitmap(m_BmpSpritePtr, 0, 0, clip);
 
 		break;
 
 	case STATE_JUMP:
 		m_HitRegionPtr->CreateFromRect(-jumpSize.x / 2, -jumpSize.y, jumpSize.x, jumpSize.y);
-		// NINJA JUMP BOLLEKE! ------------------------------------------------------------------------------
+		// NINJA JUMP LIKE A BALL ------------------------------------------------------------------------------
 		matCenter.SetAsTranslate(-jumpSize / 2);
 		matTranslate.SetAsTranslate(m_Pos.x, m_Pos.y - 15);
 		matRotate.SetAsRotate(m_JumpRotation);
@@ -570,7 +556,7 @@ void Player::DrawPlayer() {
 		clip.bottom = clip.top + jumpSize.y;
 
 		GAME_ENGINE->SetTransformMatrix(matCenter*matScale*matRotate*matTranslate*(*m_MatViewPtr));
-		GAME_ENGINE->DrawBitmap(m_BmpSpritePtr, 0, 0, clip); // Finaly, draw the bitmap
+		GAME_ENGINE->DrawBitmap(m_BmpSpritePtr, 0, 0, clip);
 		break;
 
 
@@ -587,7 +573,7 @@ void Player::DrawPlayer() {
 		clip.bottom = clip.top + swimSize.y;
 
 		GAME_ENGINE->SetTransformMatrix(matCenter*matScale*matTranslate*(*m_MatViewPtr));
-		GAME_ENGINE->DrawBitmap(m_BmpSpritePtr, 0, 0, clip); // Finaly, draw the bitmap
+		GAME_ENGINE->DrawBitmap(m_BmpSpritePtr, 0, 0, clip);
 
 		// BODY --------------------------------------------------------------------
 		matCenter.SetAsTranslate(-m_BodySize.x / 2, -m_BodySize.y);
@@ -600,7 +586,7 @@ void Player::DrawPlayer() {
 		clip.bottom = clip.top + m_BodySize.y;
 
 		GAME_ENGINE->SetTransformMatrix(matCenter*matScale*matTranslate*(*m_MatViewPtr));
-		GAME_ENGINE->DrawBitmap(m_BmpSpritePtr, 0, 0, clip); // Finaly, draw the bitmap
+		GAME_ENGINE->DrawBitmap(m_BmpSpritePtr, 0, 0, clip);
 		break;
 
 	case STATE_DIVE:
@@ -617,7 +603,7 @@ void Player::DrawPlayer() {
 		clip.bottom = clip.top + swimSize.y;
 
 		GAME_ENGINE->SetTransformMatrix(matCenter*matScale*matTranslate*(*m_MatViewPtr));
-		GAME_ENGINE->DrawBitmap(m_BmpSpritePtr, 0, 0, clip); // Finaly, draw the bitmap
+		GAME_ENGINE->DrawBitmap(m_BmpSpritePtr, 0, 0, clip);
 
 		break;
 
@@ -634,7 +620,7 @@ void Player::DrawPlayer() {
 		clip.bottom = clip.top + croawlSize.y;
 
 		GAME_ENGINE->SetTransformMatrix(matCenter*matScale*matTranslate*(*m_MatViewPtr));
-		GAME_ENGINE->DrawBitmap(m_BmpSpritePtr, 0, 0, clip); // Finaly, draw the bitmap
+		GAME_ENGINE->DrawBitmap(m_BmpSpritePtr, 0, 0, clip);
 		break;
 	}
 
@@ -677,7 +663,7 @@ bool Player::DoCollitions(HitRegion *hitVertPtr, DOUBLE2& posRef, DOUBLE2& veloc
 			double height = abs(checkHeight.bottom - checkHeight.top);
 			if (deltaY<height && deltaY>-height) {
 				posRef.y += deltaY;
-				if (deltaY* velocityRef.y < 0) // verschillend teken
+				if (deltaY* velocityRef.y < 0) // Different sign
 					velocityRef.y = 0;
 				returnCollide = true;
 				//GAME_ENGINE->SetColor(5,5,255,200);
@@ -716,7 +702,7 @@ double Player::ReturnGoodLen(double getal1, double getal2, double centerXY)
 	double delta = 0;
 	delta = abs(getal1 - getal2);
 
-	if (delta > 0.001) { // er is een botsing
+	if (delta > 0.001) { // There is a colition
 		double colCenter = (getal1 + getal2) / 2;
 		if (centerXY < colCenter) delta *= -1;
 	}

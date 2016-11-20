@@ -238,13 +238,13 @@ void Contra::GamePaint(RECT rect)
 
 
 	/*int infinity= 9999;
-	DOUBLE2 schetmLingsBoven=  m_MatView.Inverse().TransformPoint( DOUBLE2() );
-	DOUBLE2 schetmRechtsOnder= m_MatView.Inverse().TransformPoint( DOUBLE2(GAME_ENGINE->GetWidth(), GAME_ENGINE->GetHeight()) );
+	DOUBLE2 screenLeftTop=  m_MatView.Inverse().TransformPoint( DOUBLE2() );
+	DOUBLE2 screenRightDown= m_MatView.Inverse().TransformPoint( DOUBLE2(GAME_ENGINE->GetWidth(), GAME_ENGINE->GetHeight()) );
 
 	GAME_ENGINE->SetColor(0,0,0,200);
 	GAME_ENGINE->SetTransformMatrix(m_MatView);
-	GAME_ENGINE->FillRect(schetmRechtsOnder.x-5, schetmLingsBoven.y, infinity, infinity); // Rechts
-	//GAME_ENGINE->FillRect(-infinity, schetmRechtsOnder.y, infinity, infinity); // Onder
+	GAME_ENGINE->FillRect(screenRightDown.x-5, screenLeftTop.y, infinity, infinity); // Rechts
+	//GAME_ENGINE->FillRect(-infinity, screenRightDown.y, infinity, infinity); // Onder
 
 	//GAME_ENGINE->DrawRect(m_PosCamera.x-m_GameSize, m_PosCamera.y-m_GameSize, m_PosCamera.x+m_GameSize, m_PosCamera.y+m_GameSize);
 	*/

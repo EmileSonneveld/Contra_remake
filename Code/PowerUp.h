@@ -13,7 +13,7 @@
 class PowerUp : public ObjectBase
 {
 public:
-	PowerUp(DOUBLE2 pos, int type);
+	PowerUp(DOUBLE2 pos, BulletType type);
 	virtual ~PowerUp();
 
 	//-------------------------------------------------
@@ -30,12 +30,7 @@ private:
 	//-------------------------------------------------
 
 	// Power up's constants
-	int m_BulletType; // eigenlijk powerUpType
-	static const int BULLET_NORMAL = 0;
-	static const int BULLET_MITRAILLEUR = 1;
-	static const int BULLET_SUPER = 2;
-	static const int BULLET_LAZER = 3;
-	static const int BULLET_FLAME = 4;
+	BulletType m_BulletType;
 
 
 	static Bitmap *m_BmpSpritePtr;

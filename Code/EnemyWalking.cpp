@@ -98,11 +98,11 @@ void EnemyWalking::Tick(double deltaTime)
 		m_Velocity.x = 80 * m_PointingDir.x;
 	}
 
-	DOUBLE2 schetmLingsBoven = (*m_MatViewPtr).Inverse().TransformPoint(DOUBLE2());
-	DOUBLE2 schetmRechtsOnder = (*m_MatViewPtr).Inverse().TransformPoint(DOUBLE2(GAME_ENGINE->GetWidth(), GAME_ENGINE->GetHeight()));
+	DOUBLE2 screenLeftTop = (*m_MatViewPtr).Inverse().TransformPoint(DOUBLE2());
+	DOUBLE2 screenRightDown = (*m_MatViewPtr).Inverse().TransformPoint(DOUBLE2(GAME_ENGINE->GetWidth(), GAME_ENGINE->GetHeight()));
 
 
-	if (m_Pos.x < schetmLingsBoven.x - m_SpriteSize.x)
+	if (m_Pos.x < screenLeftTop.x - m_SpriteSize.x)
 		m_ObjectListPtr->Delete(this); // gevaarlijk!
 
 }
@@ -146,8 +146,7 @@ void EnemyWalking::StartToDie() {
 	m_TimeToDie = 30;
 	m_Velocity.x = 90 * -m_PointingDir.x;
 	m_Velocity.y = -100;
-	m_HitRegionPtr->SetPos(-INFINITE, -INFINITE);
-
+	m_HitRegionPtr->SetPos(999888, 999888);
 }
 
 

@@ -62,8 +62,8 @@ void EvilTurret::Tick(double deltaTime)
 	if (m_ColorTick >= 3) m_ColorTick = 0;
 
 
-	//DOUBLE2 schetmLingsBoven= (*m_MatViewPtr).Inverse().TransformPoint( DOUBLE2() );
-	DOUBLE2 schetmRechtsOnder = (*m_MatViewPtr).Inverse().TransformPoint(DOUBLE2(GAME_ENGINE->GetWidth(), GAME_ENGINE->GetHeight()));
+	//DOUBLE2 screenLeftTop= (*m_MatViewPtr).Inverse().TransformPoint( DOUBLE2() );
+	DOUBLE2 screenRightDown = (*m_MatViewPtr).Inverse().TransformPoint(DOUBLE2(GAME_ENGINE->GetWidth(), GAME_ENGINE->GetHeight()));
 
 
 	//m_DirectionFrame+= deltaTime*2; // tmp
@@ -71,7 +71,7 @@ void EvilTurret::Tick(double deltaTime)
 	if (m_ScrolIn == 0) {
 
 		if ((*m_MatViewPtr) != MATRIX3X2()) {
-			if (m_Pos.x < schetmRechtsOnder.x) {
+			if (m_Pos.x < screenRightDown.x) {
 				m_ScrolIn += 0.0001; // geactiveert door != 0 te zijn
 			}
 		}
@@ -115,7 +115,7 @@ void EvilTurret::Tick(double deltaTime)
 				++m_bulletsCounter;
 				if (m_bulletsCounter % 7 < 3) {
 					DOUBLE2 bulletDir(cos(m_DirRadians), sin(m_DirRadians));
-					ObjectBase *bulletPtr = new Bullet(m_Pos + bulletDir * 15, bulletDir * 150, TYPE_ENEMY_BULLET, 0);
+					ObjectBase *bulletPtr = new Bullet(m_Pos + bulletDir * 15, bulletDir * 150, TYPE_ENEMY_BULLET, BULLET_NORMAL);
 					m_ObjectListPtr->Add(bulletPtr);
 
 				}

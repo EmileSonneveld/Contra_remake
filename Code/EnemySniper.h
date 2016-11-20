@@ -25,6 +25,12 @@ public:
 	int Sign(double getal) { return (getal > 0) - (getal < 0); }
 
 private:
+	enum EnemySniperState {
+		STATE_NORMAL = 0,
+		STATE_SHOOTING = 1,
+		STATE_DIE = 5,
+	};
+
 	//-------------------------------------------------
 	// Datamembers
 	//-------------------------------------------------
@@ -42,10 +48,7 @@ private:
 
 	ObjectBase *m_PlayerPtr;
 
-	int m_State; // +/- idem aan Player
-	static const int STATE_NORMAL = 0;
-	static const int STATE_SHOOTING = 1;
-	static const int STATE_DIE = 5;
+	EnemySniperState m_State;
 
 	// -------------------------
 	// Disabling default copy constructor and default

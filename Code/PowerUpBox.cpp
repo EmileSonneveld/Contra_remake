@@ -15,7 +15,7 @@
 //---------------------------
 Bitmap * PowerUpBox::m_BmpSpritePtr = 0;
 
-PowerUpBox::PowerUpBox(DOUBLE2 pos, int type) : ObjectBase(pos), m_AnimationTick(0), m_AnimationSense(1)
+PowerUpBox::PowerUpBox(DOUBLE2 pos, BulletType type) : ObjectBase(pos), m_AnimationTick(0), m_AnimationSense(1)
 {
 	m_Type = TYPE_ENEMY;
 

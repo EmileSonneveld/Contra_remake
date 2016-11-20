@@ -54,10 +54,10 @@ void EnemySniper::Tick(double deltaTime) {
 		m_PointingDir = m_PlayerPtr->GetPos() - m_Pos;
 
 
-		//DOUBLE2 schetmLingsBoven=  (*m_MatViewPtr).Inverse().TransformPoint( DOUBLE2() );
-		DOUBLE2 schetmRechtsOnder = (*m_MatViewPtr).Inverse().TransformPoint(DOUBLE2(GAME_ENGINE->GetWidth(), GAME_ENGINE->GetHeight()));
+		//DOUBLE2 screenLeftTop=  (*m_MatViewPtr).Inverse().TransformPoint( DOUBLE2() );
+		DOUBLE2 screenRightDown = (*m_MatViewPtr).Inverse().TransformPoint(DOUBLE2(GAME_ENGINE->GetWidth(), GAME_ENGINE->GetHeight()));
 
-		if (m_Pos.x > schetmRechtsOnder.x - 16) return;
+		if (m_Pos.x > screenRightDown.x - 16) return;
 
 		double newMax = 2 * M_PI / 12; // Kartelig laten bewegen
 		double tussenWaarde = -m_PointingDir.AngleWith(DOUBLE2(1, 0));
@@ -82,7 +82,7 @@ void EnemySniper::Tick(double deltaTime) {
 				if (m_bulletsToShoot <= 0) m_State = STATE_NORMAL;
 
 				DOUBLE2 bulletDir(cos(m_DirRadians), sin(m_DirRadians));
-				ObjectBase *bulletPtr = new Bullet(m_Pos + bulletDir * 15, bulletDir * 100, TYPE_ENEMY_BULLET, 0);
+				ObjectBase *bulletPtr = new Bullet(m_Pos + bulletDir * 15, bulletDir * 100, TYPE_ENEMY_BULLET, BULLET_NORMAL);
 				m_ObjectListPtr->Add(bulletPtr);
 			}
 		}

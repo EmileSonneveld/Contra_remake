@@ -20,14 +20,13 @@ Box::Box(DOUBLE2 pos) : ObjectBase(pos), m_PointingDir(), m_ShootCounter(0), m_S
 	int gs = 32; //GridSize
 	m_Pos.x = ((int)m_Pos.x / gs + 0.5)*gs;
 	m_Pos.y = ((int)m_Pos.y / gs + 0.5)*gs;
-	m_Type = TYPE_ENEMY; // voor collitions met bullets
+	m_Type = TYPE_ENEMY;
 
 	m_Lives = 7;
 
 	m_AnimationTik = 0;
 	if (m_BmpSpritePtr == 0) {
 		m_BmpSpritePtr = new Bitmap("./resources/box.gif");
-		//m_BmpSpritePtr->SetTransparencyColor(0,0,0);
 		if (!m_BmpSpritePtr->Exists())
 			GAME_ENGINE->MessageBox("Box bitmap Fail!");
 	}
@@ -63,19 +62,19 @@ void Box::Tick(double deltaTime)
 	m_AnimationTik += 6 * deltaTime;
 	m_PointingDir = (m_PlayerPtr->GetPos() - m_Pos).Normalized();
 
-	DOUBLE2 schetmLingsBoven = (*m_MatViewPtr).Inverse().TransformPoint(DOUBLE2());
-	DOUBLE2 schetmRechtsOnder = (*m_MatViewPtr).Inverse().TransformPoint(DOUBLE2(GAME_ENGINE->GetWidth(), GAME_ENGINE->GetHeight()));
+	DOUBLE2 screenLeftTop = (*m_MatViewPtr).Inverse().TransformPoint(DOUBLE2());
+	DOUBLE2 screenRightDown = (*m_MatViewPtr).Inverse().TransformPoint(DOUBLE2(GAME_ENGINE->GetWidth(), GAME_ENGINE->GetHeight()));
 
 	/*m_State= STATE_DESACTACTIVATE;
-	if( m_Pos.x<schetmRechtsOnder.x ){
+	if( m_Pos.x<screenRightDown.x ){
 	m_State= STATE_NORMAL;
 
-	//if( m_Pos.x< schetmLingsBoven.x-20 )	m_ObjectListPtr->Delete(this);
+	//if( m_Pos.x< screenLeftTop.x-20 )	m_ObjectListPtr->Delete(this);
 	} */
 
-	if (m_Pos.x < schetmRechtsOnder.x - 16)
+	if (m_Pos.x < screenRightDown.x - 16)
 		if (m_State != STATE_DESACTACTIVATE) {
-			if (m_Pos.x < schetmLingsBoven.x + 16)
+			if (m_Pos.x < screenLeftTop.x + 16)
 				m_State = STATE_DESACTACTIVATE;
 
 			m_ShootCounter += 0.5;
@@ -83,13 +82,13 @@ void Box::Tick(double deltaTime)
 				m_ShootCounter = 0;
 
 
-				double newMax = 2 * M_PI / 12; // Kartelig laten bewegen
-				double tussenWaarde = -m_PointingDir.AngleWith(DOUBLE2(1, 0));
-				tussenWaarde /= newMax;
-				double naKomma = tussenWaarde - (int)tussenWaarde;
-				tussenWaarde = (int)tussenWaarde;
-				if (naKomma > 0.5) ++tussenWaarde;
-				m_DirRadians = tussenWaarde *newMax;
+				double newMax = 2 * M_PI / 12; // Make it move weird
+				double temp = -m_PointingDir.AngleWith(DOUBLE2(1, 0));
+				temp /= newMax;
+				double frac = temp - (int)temp;
+				temp = (int)temp;
+				if (frac > 0.5) ++temp;
+				m_DirRadians = temp *newMax;
 
 
 				if (m_State == STATE_NORMAL) {
@@ -102,7 +101,7 @@ void Box::Tick(double deltaTime)
 					if (m_bulletsToShoot <= 0) m_State = STATE_NORMAL;
 
 					DOUBLE2 bulletDir(cos(m_DirRadians), sin(m_DirRadians));
-					ObjectBase *bulletPtr = new Bullet(m_Pos + bulletDir * 15, bulletDir * 100, TYPE_ENEMY_BULLET, 0);
+					ObjectBase *bulletPtr = new Bullet(m_Pos + bulletDir * 15, bulletDir * 100, TYPE_ENEMY_BULLET, BULLET_NORMAL);
 					m_ObjectListPtr->Add(bulletPtr);
 				}
 
@@ -110,7 +109,7 @@ void Box::Tick(double deltaTime)
 
 		}
 		else { // STATE_DESACTACTIVATE
-			if (m_Pos.x < schetmRechtsOnder.x)
+			if (m_Pos.x < screenRightDown.x)
 				m_State = STATE_NORMAL;
 		}
 
@@ -135,8 +134,6 @@ void Box::Paint()
 
 	if (m_State != STATE_DESACTACTIVATE) {
 		DOUBLE2 cannonSize(22, 13);
-
-		//	radians= atan( m_PointingDir.y/ m_PointingDir.x) // te makkelijk om waar te zijn
 
 		matCenter.SetAsTranslate(-cannonSize.y / 2, -cannonSize.y / 2);
 		matRotate.SetAsRotate(m_DirRadians);

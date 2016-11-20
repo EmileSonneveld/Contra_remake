@@ -14,7 +14,8 @@
 //---------------------------
 Bitmap * EndBoss::m_BmpSpritePtr = nullptr;
 
-EndBoss::EndBoss(DOUBLE2 pos) : ObjectBase(pos), m_AnimationTick(0), m_Lives(5), m_ShieldPos(-93, -165), m_ShieldSize(24, 31)
+EndBoss::EndBoss(DOUBLE2 pos) : ObjectBase(pos), m_AnimationTick(0), m_Lives(5),
+m_ShieldPos(-93, -165), m_ShieldSize(24, 31)
 {
 	m_Type = TYPE_ENEMY;
 

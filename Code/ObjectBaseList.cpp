@@ -16,9 +16,8 @@
 //---------------------------
 ObjectBase::ObjectBase() :m_Pos() {}
 ObjectBase::ObjectBase(DOUBLE2 pos) : m_Pos(pos), m_SpriteSize(),
-m_MatViewPtr(0), m_HitRegionPtr(0), m_Type(0), m_ObjectListPtr(0)
+m_MatViewPtr(0), m_HitRegionPtr(0), m_Type(TYPE_NOT_SET), m_ObjectListPtr(0)
 {
-	m_Type = TYPE_NOT_SET;
 	m_HitRegionPtr = new HitRegion();
 
 	//int gs= 32; //GridSize // may not affect bullets
@@ -60,7 +59,8 @@ ObjectBase::~ObjectBase() {
 //---------------------------
 // Constructor & Destructor
 //---------------------------
-ObjectList::ObjectList(DOUBLE2 maxPos, MATRIX3X2 *matViewPtr, HitRegion *hitTerrainPtr) : m_MaxPos(maxPos), m_MatViewPtr(matViewPtr)
+ObjectList::ObjectList(DOUBLE2 maxPos, MATRIX3X2 *matViewPtr, HitRegion *hitTerrainPtr) :
+	m_MaxPos(maxPos), m_MatViewPtr(matViewPtr)
 {
 	m_HitTerrainPtr = hitTerrainPtr;
 	m_ObjectCount = 0;
@@ -71,7 +71,7 @@ ObjectList::ObjectList(DOUBLE2 maxPos, MATRIX3X2 *matViewPtr, HitRegion *hitTerr
 ObjectList::~ObjectList()
 {
 	//for (int i=0; i<ARR_MAX; ++i){ Delete(i); }
-	for (int i = 0; i < (int)m_ObjectPtrVect.size(); ++i) { Delete(i); }
+	for (int i = 0; i < (int)m_ObjectPtrVect.size(); ++i) { DeleteNow(i); }
 	OutputStatus();
 }
 
@@ -100,7 +100,7 @@ int ObjectList::Add(ObjectBase * objectPtr)
 	return false;
 }
 
-bool ObjectList::Delete(int plaats)
+bool ObjectList::DeleteNow(int plaats)
 {
 	if (CheckIfPlaatsExist(plaats)) {
 		delete m_ObjectPtrVect.at(plaats);
@@ -114,12 +114,21 @@ bool ObjectList::Delete(int plaats)
 
 bool ObjectList::Delete(ObjectBase *objPtr)
 {
-	for (int plaats = 0; plaats < (int)m_ObjectPtrVect.size(); ++plaats) {
-		if (m_ObjectPtrVect.at(plaats) == objPtr) {
-			return Delete(plaats);
+	this->m_ObjectPtrToDeleteVect.push_back(objPtr);
+	return false;
+}
+
+void ObjectList::DeleteStagedObjects()
+{
+	for each (auto objPtr in m_ObjectPtrToDeleteVect)
+	{
+		for (int plaats = 0; plaats < (int)m_ObjectPtrVect.size(); ++plaats) {
+			if (m_ObjectPtrVect.at(plaats) == objPtr) {
+				DeleteNow(plaats);
+			}
 		}
 	}
-	return false;
+	m_ObjectPtrToDeleteVect.clear();
 }
 
 void ObjectList::Tick(double deltaTime) {
@@ -174,6 +183,8 @@ void ObjectList::Tick(double deltaTime) {
 			} // end for j
 		}
 	} // end For i
+
+	DeleteStagedObjects();
 }
 
 void ObjectList::Paint() {
@@ -211,10 +222,6 @@ bool ObjectList::CheckIfPlaatsExist(int plaats)
 }
 
 void ObjectList::OutputStatus() {
-	String output = String("\nListStatus: ") + m_ObjectCount + " / " + m_ObjectPtrVect.capacity() + " Objs";
+	String output = String("\nObjectList Status: ") + m_ObjectCount + " / " + m_ObjectPtrVect.capacity() + " Objs";
 	OutputDebugString(output);
-	/*if( m_ObjectCount>ARR_MAX ){// geen nut met vector
-		OutputDebugString("\nFOUT!");
-		GAME_ENGINE->MessageBox(output);
-	}*/
 }
