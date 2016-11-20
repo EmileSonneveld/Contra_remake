@@ -7,34 +7,34 @@
 #include "ObjectBaseList.h"
 
 //-----------------------------------------------------
-// Bullet Class									
+// Bullet Class
 //-----------------------------------------------------
-class Bullet: public ObjectBase
+class Bullet : public ObjectBase
 {
 public:
-	Bullet(DOUBLE2 pos, DOUBLE2 velocity, int team, int bulletType);		// Constructor
-	virtual ~Bullet();		// Destructor
+	Bullet(DOUBLE2 pos, DOUBLE2 velocity, int team, int bulletType);
+	virtual ~Bullet();
 
 	//-------------------------------------------------
-	// Own methods								
+	// Own methods
 	//-------------------------------------------------
 	virtual void Tick(double deltaTime);
 	virtual void Paint();
-	virtual void CollideWith( ObjectBase *colliderptr, int otherType);
+	virtual void CollideWith(ObjectBase *colliderptr);
 	//void SetVelocity(DOUBLE2 velocity){m_Velocity= velocity;}
 
-private: 
+private:
 	//-------------------------------------------------
-	// Datamembers								
+	// Datamembers
 	//-------------------------------------------------
 
 	// Power up's constants
 	int m_BulletType;
-	static const int BULLET_NORMAL		= 0;
-	static const int BULLET_MITRAILLEUR	= 1;
-	static const int BULLET_SUPER		= 2;
-	static const int BULLET_LAZER		= 3;
-	static const int BULLET_FLAME		= 4;
+	static const int BULLET_NORMAL = 0;
+	static const int BULLET_MITRAILLEUR = 1;
+	static const int BULLET_SUPER = 2;
+	static const int BULLET_LAZER = 3;
+	static const int BULLET_FLAME = 4;
 
 	double m_Scale;
 
@@ -43,11 +43,11 @@ private:
 	bool m_Friendly; // true: from player, false: from ennemy
 
 	// -------------------------
-	// Disabling default copy constructor and default 
+	// Disabling default copy constructor and default
 	// assignment operator.
 	// -------------------------
-	Bullet(const Bullet& yRef);									
-	Bullet& operator=(const Bullet& yRef);	
+	Bullet(const Bullet& yRef);
+	Bullet& operator=(const Bullet& yRef);
 };
 
- 
+

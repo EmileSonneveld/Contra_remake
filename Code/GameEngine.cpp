@@ -15,7 +15,7 @@
 #include <stdio.h>
 #include <tchar.h>			// used for unicode strings
 
-#include <iostream>			
+#include <iostream>
 #include <iomanip>
 #include <fstream>
 #include <memory.h>
@@ -47,40 +47,40 @@ DWORD WINAPI MyFirstThreadProc(GameEngine* gamePtr)
 //-----------------------------------------------------------------
 // GameEngine Constructor(s)/Destructor
 //-----------------------------------------------------------------
-GameEngine::GameEngine() :	m_hInstance(0), 
-							m_hWindow(NULL),
-							m_TitlePtr(0),
-							m_PaintTimeTrigger(1.0/60),		// 60 FPS default
-							m_bSleep(true),	
-							m_bRunGameLoop(false),
-							m_bKeybRunning(true),	// create the keyboard monitoring thread
-							m_KeyListPtr(0),
-							m_KeybMonitor(0),		// binary ; 0 = key not pressed, 1 = key pressed
-							m_IsPainting(false),
-							m_IsDoublebuffering(false),
-							m_GamePtr(0),
-							m_PaintDoublebuffered(false),
-							m_Fullscreen(false),
+GameEngine::GameEngine() : m_hInstance(0),
+m_hWindow(NULL),
+m_TitlePtr(0),
+m_PaintTimeTrigger(1.0 / 60),		// 60 FPS default
+m_bSleep(true),
+m_bRunGameLoop(false),
+m_bKeybRunning(true),	// create the keyboard monitoring thread
+m_KeyListPtr(0),
+m_KeybMonitor(0),		// binary ; 0 = key not pressed, 1 = key pressed
+m_IsPainting(false),
+m_IsDoublebuffering(false),
+m_GamePtr(0),
+m_PaintDoublebuffered(false),
+m_Fullscreen(false),
 
-							m_D2DFactoryPtr(0),
-							m_WICFactoryPtr(0),
-							m_RenderTargetPtr(0),
-							m_DWriteFactoryPtr(0),
-							m_GraphicsEnginePtr(0),
-							m_GameTickTimerPtr(0),
-							m_GamePaintTimerPtr(0),
-							
-							m_bInitialized(false),
+m_D2DFactoryPtr(0),
+m_WICFactoryPtr(0),
+m_RenderTargetPtr(0),
+m_DWriteFactoryPtr(0),
+m_GraphicsEnginePtr(0),
+m_GameTickTimerPtr(0),
+m_GamePaintTimerPtr(0),
 
-							m_ColorBrushPtr(0),
-							m_AntialiasMode(D2D1_ANTIALIAS_MODE_ALIASED),
-							m_BitmapInterpolationMode(D2D1_BITMAP_INTERPOLATION_MODE_LINEAR),
-							m_DefaultFontPtr(0), 
-							m_UserFontPtr(0)
+m_bInitialized(false),
+
+m_ColorBrushPtr(0),
+m_AntialiasMode(D2D1_ANTIALIAS_MODE_ALIASED),
+m_BitmapInterpolationMode(D2D1_BITMAP_INTERPOLATION_MODE_LINEAR),
+m_DefaultFontPtr(0),
+m_UserFontPtr(0)
 {
 	CoInitialize(0);
 	CreateDeviceIndependentResources();
-	m_hKeybThread =    CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE) ::KeybThreadProc,    this, NULL, &m_dKeybThreadID);
+	m_hKeybThread = CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE) ::KeybThreadProc, this, NULL, &m_dKeybThreadID);
 
 	m_hMyFirstThread = CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE) ::MyFirstThreadProc, this, NULL, &m_dMyFirstThreadID);
 }
@@ -89,16 +89,16 @@ GameEngine::~GameEngine()
 {
 	// Clean up the keyboard monitoring thread
 	m_bKeybRunning = false;
-	WaitForSingleObject( m_hKeybThread, INFINITE );
-	CloseHandle( m_hKeybThread );	
-	
+	WaitForSingleObject(m_hKeybThread, INFINITE);
+	CloseHandle(m_hKeybThread);
+
 	// clean up keyboard monitor buffer after the thread that uses it is closed
-	if (m_KeyListPtr != 0) 
+	if (m_KeyListPtr != 0)
 	{
 		delete m_KeyListPtr;
 		m_KeyListPtr = 0;
 	}
-	
+
 	// Direct2D paint stuff
 	m_ColorBrushPtr->Release();
 	delete m_DefaultFontPtr;
@@ -109,7 +109,7 @@ GameEngine::~GameEngine()
 	delete m_GamePaintTimerPtr;
 	delete m_TitlePtr;
 	delete m_GamePtr;
-	
+
 	m_DWriteFactoryPtr->Release();
 	m_RenderTargetPtr->Release();
 	m_WICFactoryPtr->Release();
@@ -139,8 +139,8 @@ DWORD GameEngine::MyFirstThreadProc()
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	// !!!!!!!!!!!!! EUFORIE !!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	// Geen idee hoe het werkt, maa copy pasten uit de game engine lukt goed... :)
-	while( true ){
-		if( IsKeyDown('K') ){
+	while (true) {
+		if (IsKeyDown('K')) {
 			MessageBox("stop deze thread");
 			return 0;
 		}
@@ -160,9 +160,9 @@ DWORD GameEngine::KeybThreadProc()
 			int key = m_KeyListPtr[0];
 
 			while (key != '\0' && count < (8 * sizeof(unsigned int)))
-			{	
-				if ( !(GetAsyncKeyState(key)<0) )			// key is not pressed
-				{	    
+			{
+				if (!(GetAsyncKeyState(key) < 0))			// key is not pressed
+				{
 					if (m_KeybMonitor & (0x1 << count)) {
 						m_GamePtr->KeyPressed(key);			// if the bit was 1 then this fires a keypress
 					}
@@ -172,7 +172,7 @@ DWORD GameEngine::KeybThreadProc()
 
 				key = m_KeyListPtr[++count];				// increase count and get next key
 			}
-		}	
+		}
 
 		Sleep(1000 / KEYBCHECKRATE);
 	}
@@ -195,13 +195,13 @@ bool GameEngine::Run(HINSTANCE hInstance, int iCmdShow)
 
 	// set the instance member variable of the game engine
 	GameEngine::GetSingleton()->SetInstance(hInstance);
-	 
+
 	// Seed the random number generator
 	srand(GetTickCount());
 
 	// Game Initialization
 	m_GamePtr->GameInitialize(hInstance);
-	
+
 	// Open the window
 	if (!GameEngine::GetSingleton()->ClassRegister(iCmdShow)) return false;
 
@@ -209,13 +209,13 @@ bool GameEngine::Run(HINSTANCE hInstance, int iCmdShow)
 	CreateDeviceResources();
 
 	// User defined functions for start of the game
-	m_GamePtr->GameStart(); 
+	m_GamePtr->GameStart();
 
 	// Call GamePaint()
 	Repaint();
 
 	// Attach the keyboard thread to the main thread. This gives the keyboard events access to the window state
-	// In plain English: this allows a KeyPressed() event to hide the cursor of the window. 
+	// In plain English: this allows a KeyPressed() event to hide the cursor of the window.
 	AttachThreadInput(m_dKeybThreadID, GetCurrentThreadId(), true);
 
 	//Initialize the high precision timers
@@ -249,7 +249,7 @@ bool GameEngine::Run(HINSTANCE hInstance, int iCmdShow)
 				double tickTimeTrigger = m_PaintTimeTrigger / m_TickPaintRatio;
 				m_GameTickTimerPtr->Tick();
 				double tickTimeNow = m_GameTickTimerPtr->GetGameTime();
-				if(tickTimeNow > tickTimeTrigger)
+				if (tickTimeNow > tickTimeTrigger)
 				{
 					m_GameTickTimerPtr->Reset();
 					m_GameTickTimerPtr->Start();
@@ -259,7 +259,7 @@ bool GameEngine::Run(HINSTANCE hInstance, int iCmdShow)
 				//Draw Timing
 				m_GamePaintTimerPtr->Tick();
 				dTimeTrigger = m_GamePaintTimerPtr->GetGameTime();
-				if(dTimeTrigger > m_PaintTimeTrigger)
+				if (dTimeTrigger > m_PaintTimeTrigger)
 				{
 					m_GamePaintTimerPtr->Reset();
 					m_GamePaintTimerPtr->Start();
@@ -273,13 +273,13 @@ bool GameEngine::Run(HINSTANCE hInstance, int iCmdShow)
 			else WaitMessage(); // if the engine is sleeping or the game loop isn't supposed to run, wait for the next windows message.
 		}
 	}
-	return msg.wParam?true:false;
+	return msg.wParam ? true : false;
 }
 
 void GameEngine::ExecuteDirect2DPaint()
 {
 	D2DBeginPaint();
-	RECT usedClientRect = {0, 0, GetWidth(), GetHeight()};
+	RECT usedClientRect = { 0, 0, GetWidth(), GetHeight() };
 	m_IsDoublebuffering = true;
 	m_GamePtr->GamePaint(usedClientRect);
 	m_IsDoublebuffering = false;
@@ -300,7 +300,7 @@ bool GameEngine::SetGameValues(String const& TitleRef, WORD wIcon, WORD wSmallIc
 
 void GameEngine::ShowMousePointer(bool value)
 {
-	ShowCursor(value);	
+	ShowCursor(value);
 	Repaint();
 }
 
@@ -312,37 +312,37 @@ bool GameEngine::GoFullscreen()
 	// turn off window region without redraw
 	SetWindowRgn(m_hWindow, 0, false);
 
-	DEVMODE newSettings;	
+	DEVMODE newSettings;
 
 	// request current screen settings
 	EnumDisplaySettings(0, 0, &newSettings);
 
-	//  set desired screen size/res	
- 	newSettings.dmPelsWidth  = GetWidth();		
-	newSettings.dmPelsHeight = GetHeight();		
-	newSettings.dmBitsPerPel = 32;		
+	//  set desired screen size/res
+	newSettings.dmPelsWidth = GetWidth();
+	newSettings.dmPelsHeight = GetHeight();
+	newSettings.dmBitsPerPel = 32;
 
-	//specify which aspects of the screen settings we wish to change 
- 	newSettings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
+	//specify which aspects of the screen settings we wish to change
+	newSettings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
 
-	// attempt to apply the new settings 
+	// attempt to apply the new settings
 	long result = ChangeDisplaySettings(&newSettings, CDS_FULLSCREEN);
 
 	// exit if failure, else set datamember to fullscreen and return true
-	if ( result != DISP_CHANGE_SUCCESSFUL )	return false;
-	else 
+	if (result != DISP_CHANGE_SUCCESSFUL)	return false;
+	else
 	{
 		// store the location of the window
 		m_OldLoc = GetLocation();
 
 		// switch off the title bar
-	    DWORD dwStyle = GetWindowLong(m_hWindow, GWL_STYLE);
-	    dwStyle &= ~WS_CAPTION;
-	    SetWindowLong(m_hWindow, GWL_STYLE, dwStyle);
+		DWORD dwStyle = GetWindowLong(m_hWindow, GWL_STYLE);
+		dwStyle &= ~WS_CAPTION;
+		SetWindowLong(m_hWindow, GWL_STYLE, dwStyle);
 
 		// move the window to (0,0)
 		SetWindowPos(m_hWindow, 0, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
-		Repaint();		
+		Repaint();
 
 		m_Fullscreen = true;
 
@@ -356,12 +356,12 @@ bool GameEngine::GoWindowedMode()
 	if (!m_Fullscreen) return false;
 
 	// this resets the screen to the registry-stored values
-  	ChangeDisplaySettings(0, 0);
+	ChangeDisplaySettings(0, 0);
 
 	// replace the title bar
 	DWORD dwStyle = GetWindowLong(m_hWindow, GWL_STYLE);
-    dwStyle = dwStyle | WS_CAPTION;
-    SetWindowLong(m_hWindow, GWL_STYLE, dwStyle);
+	dwStyle = dwStyle | WS_CAPTION;
+	SetWindowLong(m_hWindow, GWL_STYLE, dwStyle);
 
 	// move the window back to its old position
 	SetWindowPos(m_hWindow, 0, m_OldLoc.x, m_OldLoc.y, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
@@ -379,43 +379,43 @@ bool GameEngine::IsFullscreen()
 
 bool GameEngine::ClassRegister(int iCmdShow)
 {
-  WNDCLASSEX    wndclass;
+	WNDCLASSEX    wndclass;
 
-  // Create the window class for the main window
-  wndclass.cbSize         = sizeof(wndclass);
-  wndclass.style          = CS_HREDRAW | CS_VREDRAW;
-  wndclass.lpfnWndProc    = WndProc;
-  wndclass.cbClsExtra     = 0;
-  wndclass.cbWndExtra     = 0;
-  wndclass.hInstance      = m_hInstance;
-  wndclass.hIcon          = LoadIcon(m_hInstance, MAKEINTRESOURCE(GetIcon()));
-  wndclass.hIconSm        = LoadIcon(m_hInstance, MAKEINTRESOURCE(GetSmallIcon()));
-  wndclass.hCursor        = LoadCursor(NULL, IDC_ARROW);
-  wndclass.hbrBackground  = m_PaintDoublebuffered?NULL:(HBRUSH)(COLOR_WINDOW + 1);
-  wndclass.lpszMenuName   = NULL;
-  wndclass.lpszClassName  = m_TitlePtr->ToTChar();
+	// Create the window class for the main window
+	wndclass.cbSize = sizeof(wndclass);
+	wndclass.style = CS_HREDRAW | CS_VREDRAW;
+	wndclass.lpfnWndProc = WndProc;
+	wndclass.cbClsExtra = 0;
+	wndclass.cbWndExtra = 0;
+	wndclass.hInstance = m_hInstance;
+	wndclass.hIcon = LoadIcon(m_hInstance, MAKEINTRESOURCE(GetIcon()));
+	wndclass.hIconSm = LoadIcon(m_hInstance, MAKEINTRESOURCE(GetSmallIcon()));
+	wndclass.hCursor = LoadCursor(NULL, IDC_ARROW);
+	wndclass.hbrBackground = m_PaintDoublebuffered ? NULL : (HBRUSH)(COLOR_WINDOW + 1);
+	wndclass.lpszMenuName = NULL;
+	wndclass.lpszClassName = m_TitlePtr->ToTChar();
 
-  // Register the window class
-  if (!RegisterClassEx(&wndclass)) return false;
+	// Register the window class
+	if (!RegisterClassEx(&wndclass)) return false;
 
-  // Calculate the window size and position based upon the game size
-  int iWindowWidth = m_iWidth + GetSystemMetrics(SM_CXFIXEDFRAME) * 2, iWindowHeight = m_iHeight + GetSystemMetrics(SM_CYFIXEDFRAME) * 2 + GetSystemMetrics(SM_CYCAPTION);
-  if (wndclass.lpszMenuName != NULL) iWindowHeight += GetSystemMetrics(SM_CYMENU);
-  int iXWindowPos = (GetSystemMetrics(SM_CXSCREEN) - iWindowWidth) / 2, iYWindowPos = (GetSystemMetrics(SM_CYSCREEN) - iWindowHeight) / 2;
+	// Calculate the window size and position based upon the game size
+	int iWindowWidth = m_iWidth + GetSystemMetrics(SM_CXFIXEDFRAME) * 2, iWindowHeight = m_iHeight + GetSystemMetrics(SM_CYFIXEDFRAME) * 2 + GetSystemMetrics(SM_CYCAPTION);
+	if (wndclass.lpszMenuName != NULL) iWindowHeight += GetSystemMetrics(SM_CYMENU);
+	int iXWindowPos = (GetSystemMetrics(SM_CXSCREEN) - iWindowWidth) / 2, iYWindowPos = (GetSystemMetrics(SM_CYSCREEN) - iWindowHeight) / 2;
 
-  // Create the window
-  m_hWindow = CreateWindow(m_TitlePtr->ToTChar(), m_TitlePtr->ToTChar(), 
-		WS_POPUPWINDOW | WS_CAPTION | WS_MINIMIZEBOX | WS_CLIPCHILDREN, 
+	// Create the window
+	m_hWindow = CreateWindow(m_TitlePtr->ToTChar(), m_TitlePtr->ToTChar(),
+		WS_POPUPWINDOW | WS_CAPTION | WS_MINIMIZEBOX | WS_CLIPCHILDREN,
 		iXWindowPos, iYWindowPos, iWindowWidth,
 		iWindowHeight, NULL, NULL, m_hInstance, NULL);
 
-  if (!m_hWindow) return false;
+	if (!m_hWindow) return false;
 
-  // Show and update the window
-  ShowWindow(m_hWindow, iCmdShow);
-  UpdateWindow(m_hWindow);
+	// Show and update the window
+	ShowWindow(m_hWindow, iCmdShow);
+	UpdateWindow(m_hWindow);
 
-  return true;
+	return true;
 }
 
 bool GameEngine::IsKeyDown(int vKey)
@@ -432,12 +432,12 @@ void GameEngine::SetKeyList(String const& keyListRef)
 
 	while (keyListRef.ToTChar()[iLength] != '\0') iLength++;			// count the amount of characters
 
-	m_KeyListPtr = (TCHAR*) malloc((iLength + 1) * sizeof(TCHAR));		// make room for this amount of characters + 1 
+	m_KeyListPtr = (TCHAR*)malloc((iLength + 1) * sizeof(TCHAR));		// make room for this amount of characters + 1
 
-	for (int count = 0; count < iLength + 1; count++) 
+	for (int count = 0; count < iLength + 1; count++)
 	{
-		TCHAR key = keyListRef.ToTChar()[count]; 
-		m_KeyListPtr[count] = (key > 96 && key < 123) ? key-32 : key;	// fill in the character, in uppercase if it's a lowercase one
+		TCHAR key = keyListRef.ToTChar()[count];
+		m_KeyListPtr[count] = (key > 96 && key < 123) ? key - 32 : key;	// fill in the character, in uppercase if it's a lowercase one
 	}
 }
 
@@ -448,8 +448,8 @@ void GameEngine::QuitGame()
 
 void GameEngine::MessageBox(String const& textRef)
 {
-	if (sizeof(TCHAR) == 2)	MessageBoxW(GetWindow(), (wchar_t*) textRef.ToTChar(), (wchar_t*) m_TitlePtr->ToTChar(), MB_ICONEXCLAMATION | MB_OK);
-	else MessageBoxA(GetWindow(), (char*) textRef.ToTChar(), (char*) m_TitlePtr->ToTChar(), MB_ICONEXCLAMATION | MB_OK);
+	if (sizeof(TCHAR) == 2)	MessageBoxW(GetWindow(), (wchar_t*)textRef.ToTChar(), (wchar_t*)m_TitlePtr->ToTChar(), MB_ICONEXCLAMATION | MB_OK);
+	else MessageBoxA(GetWindow(), (char*)textRef.ToTChar(), (char*)m_TitlePtr->ToTChar(), MB_ICONEXCLAMATION | MB_OK);
 }
 
 void GameEngine::MessageBox(int value)
@@ -469,52 +469,52 @@ void GameEngine::MessageBox(double value)
 
 static bool CALLBACK EnumInsertChildrenProc(HWND hwnd, LPARAM lParam)
 {
-	vector<HWND>* row = (vector<HWND>*) lParam; 
+	vector<HWND>* row = (vector<HWND>*) lParam;
 
-	row->push_back(hwnd); 
+	row->push_back(hwnd);
 
 	return true;
 }
 
 void GameEngine::TabNext(HWND ChildWindow)
 {
-	vector<HWND> childWindows; 
+	vector<HWND> childWindows;
 
-	EnumChildWindows(m_hWindow, (WNDENUMPROC) EnumInsertChildrenProc, (LPARAM) &childWindows);
+	EnumChildWindows(m_hWindow, (WNDENUMPROC)EnumInsertChildrenProc, (LPARAM)&childWindows);
 
 	int position = 0;
 	HWND temp = childWindows[position];
-	while(temp != ChildWindow) temp = childWindows[++position]; // find position of childWindow in the vector
+	while (temp != ChildWindow) temp = childWindows[++position]; // find position of childWindow in the vector
 
 	if (position == childWindows.size() - 1) SetFocus(childWindows[0]);
 	else SetFocus(childWindows[position + 1]);
 }
 
 void GameEngine::TabPrevious(HWND ChildWindow)
-{	
+{
 	vector<HWND> childWindows;
 
-	EnumChildWindows(m_hWindow, (WNDENUMPROC) EnumInsertChildrenProc, (LPARAM) &childWindows);
+	EnumChildWindows(m_hWindow, (WNDENUMPROC)EnumInsertChildrenProc, (LPARAM)&childWindows);
 
-	int position = (int) childWindows.size() - 1;
+	int position = (int)childWindows.size() - 1;
 	HWND temp = childWindows[position];
-	while(temp != ChildWindow) temp = childWindows[--position]; // find position of childWindow in the vector
+	while (temp != ChildWindow) temp = childWindows[--position]; // find position of childWindow in the vector
 
 	if (position == 0) SetFocus(childWindows[childWindows.size() - 1]);
 	else SetFocus(childWindows[position - 1]);
 }
 
-void GameEngine::SetInstance(HINSTANCE hInstance) 
-{ 
-	m_hInstance = hInstance; 
-}
-	
-void GameEngine::SetWindow(HWND hWindow) 
-{ 
-	m_hWindow = hWindow; 
+void GameEngine::SetInstance(HINSTANCE hInstance)
+{
+	m_hInstance = hInstance;
 }
 
-bool GameEngine::CanIPaint() 
+void GameEngine::SetWindow(HWND hWindow)
+{
+	m_hWindow = hWindow;
+}
+
+bool GameEngine::CanIPaint()
 {
 	return true; // See what happens
 	if (m_IsDoublebuffering || m_IsPainting) return true;
@@ -527,14 +527,14 @@ bool GameEngine::CanIPaint()
 
 void GameEngine::SetColor(int red, int green, int blue, int alpha)
 {
-	m_ColorBrushPtr->SetColor(D2D1::ColorF((FLOAT)(red/255.0), (FLOAT)(green/255.0), (FLOAT)(blue/255.0), (FLOAT)(alpha/255.0)));
+	m_ColorBrushPtr->SetColor(D2D1::ColorF((FLOAT)(red / 255.0), (FLOAT)(green / 255.0), (FLOAT)(blue / 255.0), (FLOAT)(alpha / 255.0)));
 }
 
 bool GameEngine::DrawSolidBackground(int red, int green, int blue)
 {
 	if (!CanIPaint()) return false;
 
-	m_RenderTargetPtr->Clear(D2D1::ColorF((FLOAT)(red/255.0), (FLOAT)(green/255.0), (FLOAT)(blue/255.0), (FLOAT)(1.0)));
+	m_RenderTargetPtr->Clear(D2D1::ColorF((FLOAT)(red / 255.0), (FLOAT)(green / 255.0), (FLOAT)(blue / 255.0), (FLOAT)(1.0)));
 
 	return true;
 }
@@ -543,8 +543,8 @@ bool GameEngine::DrawLine(double x1, double y1, double x2, double y2, double str
 {
 	if (!CanIPaint()) return false;
 
-	m_RenderTargetPtr->DrawLine(Point2F((FLOAT) x1 , (FLOAT) y1), Point2F((FLOAT) x2,(FLOAT) y2), m_ColorBrushPtr, (FLOAT) strokeWidth);
-	
+	m_RenderTargetPtr->DrawLine(Point2F((FLOAT)x1, (FLOAT)y1), Point2F((FLOAT)x2, (FLOAT)y2), m_ColorBrushPtr, (FLOAT)strokeWidth);
+
 	return true;
 }
 
@@ -557,13 +557,13 @@ bool GameEngine::DrawPolygon(const POINT ptsArr[], int count, bool close, double
 {
 	if (!CanIPaint()) return false;
 
-	for(int i=0;i<count-1;++i)
+	for (int i = 0; i < count - 1; ++i)
 	{
-		DrawLine(ptsArr[i].x,ptsArr[i].y,ptsArr[i+1].x,ptsArr[i+1].y, strokeWidth);
+		DrawLine(ptsArr[i].x, ptsArr[i].y, ptsArr[i + 1].x, ptsArr[i + 1].y, strokeWidth);
 	}
-	if(close)
+	if (close)
 	{
-		DrawLine(ptsArr[0].x,ptsArr[0].y,ptsArr[count-1].x,ptsArr[count-1].y, strokeWidth);
+		DrawLine(ptsArr[0].x, ptsArr[0].y, ptsArr[count - 1].x, ptsArr[count - 1].y, strokeWidth);
 	}
 
 	return true;
@@ -576,7 +576,7 @@ bool GameEngine::DrawPolygon(const POINT ptsArr[], int count, double strokeWidth
 
 bool GameEngine::DrawRect(double left, double top, double width, double height, double strokeWidth)
 {
-	RECT2 rect2(left, top, left+width, top+height);
+	RECT2 rect2(left, top, left + width, top + height);
 	return DrawRect(rect2, strokeWidth);
 }
 
@@ -595,21 +595,21 @@ bool GameEngine::DrawRect(RECT2 rect, double strokeWidth)
 {
 	if (!CanIPaint()) return false;
 
-	D2D1_RECT_F d2dRect = D2D1::RectF((FLOAT) rect.left, (FLOAT) rect.top, (FLOAT) rect.right, (FLOAT) rect.bottom);
+	D2D1_RECT_F d2dRect = D2D1::RectF((FLOAT)rect.left, (FLOAT)rect.top, (FLOAT)rect.right, (FLOAT)rect.bottom);
 	m_RenderTargetPtr->DrawRectangle(d2dRect, m_ColorBrushPtr, (FLOAT)strokeWidth);
-	
+
 	return true;
 }
 
 bool GameEngine::FillRect(double left, double top, double width, double height)
 {
-	RECT2 rect2(left, top, left+width, top+height);
+	RECT2 rect2(left, top, left + width, top + height);
 	return FillRect(rect2);
 }
 
 bool GameEngine::FillRect(DOUBLE2 lefttop, double width, double height)
 {
-	return FillRect(lefttop.x,lefttop.y, width, height);
+	return FillRect(lefttop.x, lefttop.y, width, height);
 }
 
 bool GameEngine::FillRect(RECT rect)
@@ -622,7 +622,7 @@ bool GameEngine::FillRect(RECT2 rect)
 {
 	if (!CanIPaint()) return false;
 
-	D2D1_RECT_F d2dRect = D2D1::RectF((FLOAT) rect.left, (FLOAT) rect.top, (FLOAT) rect.right, (FLOAT) rect.bottom);
+	D2D1_RECT_F d2dRect = D2D1::RectF((FLOAT)rect.left, (FLOAT)rect.top, (FLOAT)rect.right, (FLOAT)rect.bottom);
 	m_RenderTargetPtr->FillRectangle(d2dRect, m_ColorBrushPtr);
 
 	return true;
@@ -631,44 +631,44 @@ bool GameEngine::FillRect(RECT2 rect)
 bool GameEngine::DrawRoundedRect(double left, double top, double width, double height, double radiusX, double radiusY, double strokeWidth)
 {
 	if (!CanIPaint()) return false;
-	D2D1_RECT_F d2dRect = D2D1::RectF((FLOAT) left, (FLOAT) top, (FLOAT) (left + width), (FLOAT) (top + height));
-	D2D1_ROUNDED_RECT  d2dRoundedRect = D2D1::RoundedRect(d2dRect, (FLOAT) radiusX, (FLOAT) radiusY);
-	m_RenderTargetPtr->DrawRoundedRectangle(d2dRoundedRect, m_ColorBrushPtr,(FLOAT)strokeWidth);
+	D2D1_RECT_F d2dRect = D2D1::RectF((FLOAT)left, (FLOAT)top, (FLOAT)(left + width), (FLOAT)(top + height));
+	D2D1_ROUNDED_RECT  d2dRoundedRect = D2D1::RoundedRect(d2dRect, (FLOAT)radiusX, (FLOAT)radiusY);
+	m_RenderTargetPtr->DrawRoundedRectangle(d2dRoundedRect, m_ColorBrushPtr, (FLOAT)strokeWidth);
 	return true;
 }
 
 bool GameEngine::DrawRoundedRect(DOUBLE2 lefttop, double width, double height, double radiusX, double radiusY, double strokeWidth)
 {
 	if (!CanIPaint()) return false;
-	D2D1_RECT_F d2dRect = D2D1::RectF((FLOAT) lefttop.x, (FLOAT) lefttop.y, (FLOAT) (lefttop.x + width), (FLOAT) (lefttop.y + height));
-	D2D1_ROUNDED_RECT  d2dRoundedRect = D2D1::RoundedRect(d2dRect, (FLOAT) radiusX, (FLOAT) radiusY);
-	m_RenderTargetPtr->DrawRoundedRectangle(d2dRoundedRect, m_ColorBrushPtr,(FLOAT)strokeWidth);
+	D2D1_RECT_F d2dRect = D2D1::RectF((FLOAT)lefttop.x, (FLOAT)lefttop.y, (FLOAT)(lefttop.x + width), (FLOAT)(lefttop.y + height));
+	D2D1_ROUNDED_RECT  d2dRoundedRect = D2D1::RoundedRect(d2dRect, (FLOAT)radiusX, (FLOAT)radiusY);
+	m_RenderTargetPtr->DrawRoundedRectangle(d2dRoundedRect, m_ColorBrushPtr, (FLOAT)strokeWidth);
 	return true;
 }
 
 bool GameEngine::DrawRoundedRect(RECT rect, double radiusX, double radiusY, double strokeWidth)
 {
 	if (!CanIPaint()) return false;
-	D2D1_RECT_F d2dRect = D2D1::RectF((FLOAT) rect.left, (FLOAT) rect.top, (FLOAT) rect.right, (FLOAT) rect.bottom);
-	D2D1_ROUNDED_RECT  d2dRoundedRect = D2D1::RoundedRect(d2dRect, (FLOAT) radiusX, (FLOAT) radiusY);
-	m_RenderTargetPtr->DrawRoundedRectangle(d2dRoundedRect, m_ColorBrushPtr,(FLOAT)strokeWidth);
+	D2D1_RECT_F d2dRect = D2D1::RectF((FLOAT)rect.left, (FLOAT)rect.top, (FLOAT)rect.right, (FLOAT)rect.bottom);
+	D2D1_ROUNDED_RECT  d2dRoundedRect = D2D1::RoundedRect(d2dRect, (FLOAT)radiusX, (FLOAT)radiusY);
+	m_RenderTargetPtr->DrawRoundedRectangle(d2dRoundedRect, m_ColorBrushPtr, (FLOAT)strokeWidth);
 	return true;
 }
 
 bool GameEngine::DrawRoundedRect(RECT2 rect, double radiusX, double radiusY, double strokeWidth)
 {
 	if (!CanIPaint()) return false;
-	D2D1_RECT_F d2dRect = D2D1::RectF((FLOAT) rect.left, (FLOAT) rect.top, (FLOAT) rect.right, (FLOAT) rect.bottom);
-	D2D1_ROUNDED_RECT  d2dRoundedRect = D2D1::RoundedRect(d2dRect, (FLOAT) radiusX, (FLOAT) radiusY);
-	m_RenderTargetPtr->DrawRoundedRectangle(d2dRoundedRect, m_ColorBrushPtr,(FLOAT)strokeWidth);
+	D2D1_RECT_F d2dRect = D2D1::RectF((FLOAT)rect.left, (FLOAT)rect.top, (FLOAT)rect.right, (FLOAT)rect.bottom);
+	D2D1_ROUNDED_RECT  d2dRoundedRect = D2D1::RoundedRect(d2dRect, (FLOAT)radiusX, (FLOAT)radiusY);
+	m_RenderTargetPtr->DrawRoundedRectangle(d2dRoundedRect, m_ColorBrushPtr, (FLOAT)strokeWidth);
 	return true;
 }
 
 bool GameEngine::FillRoundedRect(double left, double top, double width, double height, double radiusX, double radiusY)
 {
 	if (!CanIPaint()) return false;
-	D2D1_RECT_F d2dRect = D2D1::RectF((FLOAT) left, (FLOAT) top, (FLOAT) (left + width), (FLOAT) (top + height));
-	D2D1_ROUNDED_RECT  d2dRoundedRect = D2D1::RoundedRect(d2dRect, (FLOAT) radiusX, (FLOAT) radiusY);
+	D2D1_RECT_F d2dRect = D2D1::RectF((FLOAT)left, (FLOAT)top, (FLOAT)(left + width), (FLOAT)(top + height));
+	D2D1_ROUNDED_RECT  d2dRoundedRect = D2D1::RoundedRect(d2dRect, (FLOAT)radiusX, (FLOAT)radiusY);
 	m_RenderTargetPtr->FillRoundedRectangle(d2dRoundedRect, m_ColorBrushPtr);
 	return true;
 }
@@ -676,8 +676,8 @@ bool GameEngine::FillRoundedRect(double left, double top, double width, double h
 bool GameEngine::FillRoundedRect(DOUBLE2 lefttop, double width, double height, double radiusX, double radiusY)
 {
 	if (!CanIPaint()) return false;
-	D2D1_RECT_F d2dRect = D2D1::RectF((FLOAT) lefttop.x, (FLOAT) lefttop.y, (FLOAT) (lefttop.x + width), (FLOAT) (lefttop.y + height));
-	D2D1_ROUNDED_RECT  d2dRoundedRect = D2D1::RoundedRect(d2dRect, (FLOAT) radiusX, (FLOAT) radiusY);
+	D2D1_RECT_F d2dRect = D2D1::RectF((FLOAT)lefttop.x, (FLOAT)lefttop.y, (FLOAT)(lefttop.x + width), (FLOAT)(lefttop.y + height));
+	D2D1_ROUNDED_RECT  d2dRoundedRect = D2D1::RoundedRect(d2dRect, (FLOAT)radiusX, (FLOAT)radiusY);
 	m_RenderTargetPtr->FillRoundedRectangle(d2dRoundedRect, m_ColorBrushPtr);
 	return true;
 }
@@ -685,8 +685,8 @@ bool GameEngine::FillRoundedRect(DOUBLE2 lefttop, double width, double height, d
 bool GameEngine::FillRoundedRect(RECT rect, double radiusX, double radiusY)
 {
 	if (!CanIPaint()) return false;
-	D2D1_RECT_F d2dRect = D2D1::RectF((FLOAT) rect.left, (FLOAT) rect.top, (FLOAT) rect.right, (FLOAT) rect.bottom);
-	D2D1_ROUNDED_RECT  d2dRoundedRect = D2D1::RoundedRect(d2dRect, (FLOAT) radiusX, (FLOAT) radiusY);
+	D2D1_RECT_F d2dRect = D2D1::RectF((FLOAT)rect.left, (FLOAT)rect.top, (FLOAT)rect.right, (FLOAT)rect.bottom);
+	D2D1_ROUNDED_RECT  d2dRoundedRect = D2D1::RoundedRect(d2dRect, (FLOAT)radiusX, (FLOAT)radiusY);
 	m_RenderTargetPtr->FillRoundedRectangle(d2dRoundedRect, m_ColorBrushPtr);
 	return true;
 }
@@ -694,8 +694,8 @@ bool GameEngine::FillRoundedRect(RECT rect, double radiusX, double radiusY)
 bool GameEngine::FillRoundedRect(RECT2 rect, double radiusX, double radiusY)
 {
 	if (!CanIPaint()) return false;
-	D2D1_RECT_F d2dRect = D2D1::RectF((FLOAT) rect.left, (FLOAT) rect.top, (FLOAT) rect.right, (FLOAT) rect.bottom);
-	D2D1_ROUNDED_RECT  d2dRoundedRect = D2D1::RoundedRect(d2dRect, (FLOAT) radiusX, (FLOAT) radiusY);
+	D2D1_RECT_F d2dRect = D2D1::RectF((FLOAT)rect.left, (FLOAT)rect.top, (FLOAT)rect.right, (FLOAT)rect.bottom);
+	D2D1_ROUNDED_RECT  d2dRoundedRect = D2D1::RoundedRect(d2dRect, (FLOAT)radiusX, (FLOAT)radiusY);
 	m_RenderTargetPtr->FillRoundedRectangle(d2dRoundedRect, m_ColorBrushPtr);
 	return true;
 }
@@ -704,8 +704,8 @@ bool GameEngine::DrawEllipse(double centerX, double centerY, double radiusX, dou
 {
 	if (!CanIPaint()) return false;
 
-	D2D1_ELLIPSE ellipse=D2D1::Ellipse(D2D1::Point2F((FLOAT) centerX, (FLOAT) centerY), (FLOAT) radiusX, (FLOAT) radiusY);
-	m_RenderTargetPtr->DrawEllipse(ellipse, m_ColorBrushPtr, (FLOAT) strokeWidth);
+	D2D1_ELLIPSE ellipse = D2D1::Ellipse(D2D1::Point2F((FLOAT)centerX, (FLOAT)centerY), (FLOAT)radiusX, (FLOAT)radiusY);
+	m_RenderTargetPtr->DrawEllipse(ellipse, m_ColorBrushPtr, (FLOAT)strokeWidth);
 
 	return true;
 }
@@ -719,7 +719,7 @@ bool GameEngine::FillEllipse(double centerX, double centerY, double radiusX, dou
 {
 	if (!CanIPaint()) return false;
 
-	D2D1_ELLIPSE ellipse=D2D1::Ellipse(D2D1::Point2F((FLOAT) centerX, (FLOAT) centerY), (FLOAT) radiusX, (FLOAT) radiusY);
+	D2D1_ELLIPSE ellipse = D2D1::Ellipse(D2D1::Point2F((FLOAT)centerX, (FLOAT)centerY), (FLOAT)radiusX, (FLOAT)radiusY);
 	m_RenderTargetPtr->FillEllipse(ellipse, m_ColorBrushPtr);
 
 	return true;
@@ -741,7 +741,7 @@ bool GameEngine::DrawString(TextFormat* textFormatPtr, const String& text, doubl
 	D2D1_SIZE_F dstSize_f = m_RenderTargetPtr->GetSize();
 	if (width == 0) width = dstSize_f.width;
 	if (height == 0) height = dstSize_f.height;
-	D2D1_RECT_F layoutRect = (RectF) ((FLOAT) xPos, (FLOAT) yPos, (FLOAT) (width + xPos), (FLOAT) (height + yPos));
+	D2D1_RECT_F layoutRect = (RectF)((FLOAT)xPos, (FLOAT)yPos, (FLOAT)(width + xPos), (FLOAT)(height + yPos));
 
 	wstring wText(text.ToTChar(), text.ToTChar() + text.GetLength());
 	m_RenderTargetPtr->DrawText(wText.c_str(), text.GetLength(), textFormatPtr->GetTextFormat(), layoutRect, m_ColorBrushPtr);
@@ -749,19 +749,19 @@ bool GameEngine::DrawString(TextFormat* textFormatPtr, const String& text, doubl
 	return true;
 }
 
-bool GameEngine::DrawString(const String &text,double xPos, double yPos, double width, double height)
+bool GameEngine::DrawString(const String &text, double xPos, double yPos, double width, double height)
 {
 	return DrawString(m_DefaultFontPtr, text, xPos, yPos, width, height);
 }
 
 bool GameEngine::DrawString(TextFormat* textFormatPtr, const String &text, DOUBLE2 pos, double width, double height)
 {
-	return DrawString(textFormatPtr, text, pos.x, pos.y, width, height); 
+	return DrawString(textFormatPtr, text, pos.x, pos.y, width, height);
 }
 
 bool GameEngine::DrawString(const String &text, DOUBLE2 pos, double width, double height)
 {
-	return DrawString(m_DefaultFontPtr, text, pos.x, pos.y, width, height); 
+	return DrawString(m_DefaultFontPtr, text, pos.x, pos.y, width, height);
 }
 
 bool GameEngine::DrawBitmap(Bitmap* imagePtr, DOUBLE2 leftTop)
@@ -786,22 +786,22 @@ bool GameEngine::DrawBitmap(Bitmap* imagePtr, double x, double y, RECT2 srcRect)
 
 	//The size and position, in device-independent pixels in the bitmap's coordinate space, of the area within the bitmap to draw.
 	D2D1_RECT_F srcRect_f;
-	srcRect_f.left = (FLOAT) srcRect.left;
-	srcRect_f.right = (FLOAT) srcRect.right;
-	srcRect_f.top = (FLOAT) srcRect.top;
-	srcRect_f.bottom = (FLOAT) srcRect.bottom;
+	srcRect_f.left = (FLOAT)srcRect.left;
+	srcRect_f.right = (FLOAT)srcRect.right;
+	srcRect_f.top = (FLOAT)srcRect.top;
+	srcRect_f.bottom = (FLOAT)srcRect.bottom;
 
 	//http://msdn.microsoft.com/en-us/library/dd371880(v=VS.85).aspx
-	//The size and position, in device-independent pixels in the render target's coordinate space, 
-	//of the area to which the bitmap is drawn. If the rectangle is not well-ordered, nothing is drawn, 
+	//The size and position, in device-independent pixels in the render target's coordinate space,
+	//of the area to which the bitmap is drawn. If the rectangle is not well-ordered, nothing is drawn,
 	//but the render target does not enter an error state.
 	D2D1_RECT_F dstRect_f;
-	dstRect_f.left = (FLOAT) x;
-	dstRect_f.right = dstRect_f.left + (FLOAT) (srcRect.right - srcRect.left);
-	dstRect_f.top = (FLOAT) y;
-	dstRect_f.bottom =  dstRect_f.top + (FLOAT) (srcRect.bottom - srcRect.top);
+	dstRect_f.left = (FLOAT)x;
+	dstRect_f.right = dstRect_f.left + (FLOAT)(srcRect.right - srcRect.left);
+	dstRect_f.top = (FLOAT)y;
+	dstRect_f.bottom = dstRect_f.top + (FLOAT)(srcRect.bottom - srcRect.top);
 
-	m_RenderTargetPtr->DrawBitmap(imagePtr->GetBitmapPtr(), dstRect_f, (FLOAT) imagePtr->GetOpacity(), m_BitmapInterpolationMode, srcRect_f);
+	m_RenderTargetPtr->DrawBitmap(imagePtr->GetBitmapPtr(), dstRect_f, (FLOAT)imagePtr->GetOpacity(), m_BitmapInterpolationMode, srcRect_f);
 
 	return true;
 }
@@ -845,8 +845,8 @@ bool GameEngine::DrawCoordinateSystem(double unitSize)
 {
 	if (!CanIPaint()) return false;
 
-	DrawLine(DOUBLE2(0,0), DOUBLE2(unitSize * 1.3, 0));
-	DrawLine(DOUBLE2(0,0), DOUBLE2(0, unitSize * 1.3));	
+	DrawLine(DOUBLE2(0, 0), DOUBLE2(unitSize * 1.3, 0));
+	DrawLine(DOUBLE2(0, 0), DOUBLE2(0, unitSize * 1.3));
 
 	return true;
 }
@@ -866,16 +866,16 @@ MATRIX3X2 GameEngine::GetTransformMatrix()
 
 void GameEngine::EnableAntiAlias(bool isAlias)
 {
-	if(isAlias)		m_AntialiasMode = D2D1_ANTIALIAS_MODE_PER_PRIMITIVE;
+	if (isAlias)		m_AntialiasMode = D2D1_ANTIALIAS_MODE_PER_PRIMITIVE;
 	else			m_AntialiasMode = D2D1_ANTIALIAS_MODE_ALIASED;
-	if(m_RenderTargetPtr)m_RenderTargetPtr->SetAntialiasMode(m_AntialiasMode);
+	if (m_RenderTargetPtr)m_RenderTargetPtr->SetAntialiasMode(m_AntialiasMode);
 }
 
 void GameEngine::SetBitmapInterpolationModeLinear()
 {
 	m_BitmapInterpolationMode = D2D1_BITMAP_INTERPOLATION_MODE_LINEAR;
 }
-	
+
 void GameEngine::SetBitmapInterpolationModeNearestNeighbor()
 {
 	m_BitmapInterpolationMode = D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR;
@@ -886,74 +886,74 @@ void GameEngine::SetFont(TextFormat* fontPtr)
 	m_UserFontPtr = fontPtr;
 }
 
-void GameEngine::Repaint() 
+void GameEngine::Repaint()
 {
 	InvalidateRect(m_hWindow, NULL, true);
 }
 
-HINSTANCE GameEngine::GetInstance() 
-{ 
-	return m_hInstance; 
-}
-
-HWND GameEngine::GetWindow() 
-{ 
-	return m_hWindow; 
-}
-
-String& GameEngine::GetTitle() 
+HINSTANCE GameEngine::GetInstance()
 {
-	return *m_TitlePtr; 
+	return m_hInstance;
 }
 
-WORD GameEngine::GetIcon() 
-{ 
-	return m_wIcon; 
-}
-
-WORD GameEngine::GetSmallIcon() 
+HWND GameEngine::GetWindow()
 {
-	return m_wSmallIcon; 
+	return m_hWindow;
 }
 
-int GameEngine::GetWidth() 
-{ 
-	return m_iWidth; 
+String& GameEngine::GetTitle()
+{
+	return *m_TitlePtr;
 }
 
-int GameEngine::GetHeight() 
-{ 
-	return m_iHeight; 
+WORD GameEngine::GetIcon()
+{
+	return m_wIcon;
 }
 
-double GameEngine::GetFrameDelay() 
-{ 
-	return m_PaintTimeTrigger; 
-}	
-
-bool GameEngine::GetSleep() 
-{ 
-	return m_bSleep?true:false; 
+WORD GameEngine::GetSmallIcon()
+{
+	return m_wSmallIcon;
 }
 
-ID2D1Factory* GameEngine::GetD2DFactory() 
-{ 
+int GameEngine::GetWidth()
+{
+	return m_iWidth;
+}
+
+int GameEngine::GetHeight()
+{
+	return m_iHeight;
+}
+
+double GameEngine::GetFrameDelay()
+{
+	return m_PaintTimeTrigger;
+}
+
+bool GameEngine::GetSleep()
+{
+	return m_bSleep ? true : false;
+}
+
+ID2D1Factory* GameEngine::GetD2DFactory()
+{
 	return m_D2DFactoryPtr;
 }
 
-IWICImagingFactory* GameEngine::GetWICImagingFactory() 
-{ 
-	return m_WICFactoryPtr; 
+IWICImagingFactory* GameEngine::GetWICImagingFactory()
+{
+	return m_WICFactoryPtr;
 }
 
-ID2D1HwndRenderTarget* GameEngine::GetHwndRenderTarget() 
-{ 
-	return m_RenderTargetPtr; 
+ID2D1HwndRenderTarget* GameEngine::GetHwndRenderTarget()
+{
+	return m_RenderTargetPtr;
 }
 
-IDWriteFactory* GameEngine::GetDWriteFactory() 
-{ 
-	return m_DWriteFactoryPtr; 
+IDWriteFactory* GameEngine::GetDWriteFactory()
+{
+	return m_DWriteFactoryPtr;
 }
 
 POINT GameEngine::GetLocation()
@@ -968,40 +968,40 @@ POINT GameEngine::GetLocation()
 	return pos;
 }
 
-void GameEngine::SetIcon(WORD wIcon) 
-{ 
-	m_wIcon = wIcon; 
+void GameEngine::SetIcon(WORD wIcon)
+{
+	m_wIcon = wIcon;
 }
 
-void GameEngine::SetSmallIcon(WORD wSmallIcon) 
-{ 
-	m_wSmallIcon = wSmallIcon; 
+void GameEngine::SetSmallIcon(WORD wSmallIcon)
+{
+	m_wSmallIcon = wSmallIcon;
 }
 
-void GameEngine::SetWidth(int iWidth) 
-{ 
-	m_iWidth = iWidth; 
+void GameEngine::SetWidth(int iWidth)
+{
+	m_iWidth = iWidth;
 }
 
-void GameEngine::SetHeight(int iHeight) 
-{ 
-	m_iHeight = iHeight; 
+void GameEngine::SetHeight(int iHeight)
+{
+	m_iHeight = iHeight;
 }
 
-void GameEngine::SetFrameRate(double iFrameRate) 
-{ 
-	m_PaintTimeTrigger = 1.0 / iFrameRate; 
+void GameEngine::SetFrameRate(double iFrameRate)
+{
+	m_PaintTimeTrigger = 1.0 / iFrameRate;
 }
 
-void GameEngine::SetSleep(bool bSleep) 
-{ 
-	m_bSleep = bSleep; 
+void GameEngine::SetSleep(bool bSleep)
+{
+	m_bSleep = bSleep;
 }
 
-void GameEngine::SetPaintDoublebuffered() 
-{ 
-	m_PaintDoublebuffered = true; 
-}	
+void GameEngine::SetPaintDoublebuffered()
+{
+	m_PaintDoublebuffered = true;
+}
 
 void GameEngine::SetLocation(int x, int y)
 {
@@ -1030,10 +1030,10 @@ LRESULT GameEngine::HandleEvent(HWND hWindow, UINT msg, WPARAM wParam, LPARAM lP
 	usedClientRect.bottom = GetHeight();
 
 	double scaleX = 1, scaleY = 1;
-	if(windowClientRect.right != 0 &&windowClientRect.bottom != 0)
+	if (windowClientRect.right != 0 && windowClientRect.bottom != 0)
 	{
-		scaleX = (usedClientRect.right - usedClientRect.left) / (double) (windowClientRect.right - windowClientRect.left);
-		scaleY = (usedClientRect.bottom - usedClientRect.top) / (double) (windowClientRect.bottom - windowClientRect.top);
+		scaleX = (usedClientRect.right - usedClientRect.left) / (double)(windowClientRect.right - windowClientRect.left);
+		scaleY = (usedClientRect.bottom - usedClientRect.top) / (double)(windowClientRect.bottom - windowClientRect.top);
 	}
 	// Double buffering code
 	//HDC hBufferDC;
@@ -1044,169 +1044,169 @@ LRESULT GameEngine::HandleEvent(HWND hWindow, UINT msg, WPARAM wParam, LPARAM lP
 	// Route Windows messages to game engine member functions
 	switch (msg)
 	{
-		case WM_CREATE:
-			// Set the game window 
-			SetWindow(hWindow);
+	case WM_CREATE:
+		// Set the game window
+		SetWindow(hWindow);
 
+		return 0;
+
+	case WM_ACTIVATE:
+		// Activate/deactivate the game and update the Sleep status
+		if (wParam != WA_INACTIVE)
+		{
+			//Lock hDC
+			hDC = GetDC(hWindow);
+
+			// Do user defined drawing functions
+			//m_GamePtr->GameActivate(hDC, usedClientRect);
+			m_GamePtr->GameActivate();
+
+			// Release HDC
+			ReleaseDC(hWindow, hDC);
+
+			SetSleep(false);
+		}
+		else
+		{
+			//Lock hDC
+			hDC = GetDC(hWindow);
+
+			// Do user defined drawing functions
+			//m_GamePtr->GameDeactivate(hDC, usedClientRect);
+			m_GamePtr->GameDeactivate();
+
+			// Release HDC
+			ReleaseDC(hWindow, hDC);
+		}
+		return 0;
+
+	case WM_PAINT:
+		//WM_PAINT needs BeginPaint and EndPaint
+		hDC = BeginPaint(hWindow, &ps);
+		if (m_bRunGameLoop == false && m_bInitialized == true) ExecuteDirect2DPaint();
+		EndPaint(hWindow, &ps);
+
+		//if (m_PaintDoublebuffered)
+		//{
+			//// Get window, rectangle and HDC
+			//hDC = BeginPaint(hWindow, &ps);
+
+			//// Double buffering code
+			//hBufferDC = CreateCompatibleDC(hDC);
+			//// Create the buffer, size is area used by client
+			//hBufferBmp = CreateCompatibleBitmap(hDC, GetWidth(), GetHeight());
+			//hOldBmp = (HBITMAP) SelectObject(hBufferDC, hBufferBmp);
+
+			//// Do user defined drawing functions on the buffer, parameters added
+			//// for ease of drawing
+			//m_HdcDraw = hBufferDC;
+			//m_RectDraw = usedClientRect;
+
+			//m_IsPainting = true;
+			//m_GamePtr->GamePaint(usedClientRect);
+			//m_IsPainting = false;
+
+			//// As a last step copy the memdc to the hdc
+			////BitBlt(hDC, 0, 0, iWidth, iHeight, hBufferDC, 0, 0, SRCCOPY);
+			//StretchBlt(
+			//		hDC, 0,0,windowClientRect.right-windowClientRect.left,windowClientRect.bottom-windowClientRect.top,
+			//		hBufferDC, 0, 0, GetWidth(),GetHeight(),SRCCOPY
+			//);
+
+			//// Reset the old bmp of the buffer, mainly for show since we kill it anyway
+			//SelectObject(hBufferDC, hOldBmp);
+			//// Kill the buffer
+			//DeleteObject(hBufferBmp);
+			//DeleteDC(hBufferDC);
+
+			//// end paint
+			//EndPaint(hWindow, &ps);
+
+		//}
+		//else
+		//{
+
+			//m_HdcDraw = BeginPaint(hWindow, &ps);
+			//GetClientRect(hWindow, &m_RectDraw);
+
+			//m_IsPainting = true;
+			//m_GamePtr->GamePaint(m_RectDraw);
+			//m_IsPainting = false;
+
+			//EndPaint(hWindow, &ps);
+		//}
+
+		return 0;
+
+	case WM_CTLCOLOREDIT:
+		return SendMessage((HWND)lParam, WM_CTLCOLOREDIT, wParam, lParam);	// delegate this message to the child window
+
+	case WM_CTLCOLORBTN:
+		return SendMessage((HWND)lParam, WM_CTLCOLOREDIT, wParam, lParam);	// delegate this message to the child window
+
+	case WM_LBUTTONDOWN:
+		m_GamePtr->MouseButtonAction(true, true, (int)(LOWORD(lParam) * scaleX), (int)(HIWORD(lParam) * scaleY), wParam);
+		return 0;
+
+	case WM_LBUTTONUP:
+		m_GamePtr->MouseButtonAction(true, false, (int)(LOWORD(lParam) * scaleX), (int)(HIWORD(lParam) * scaleY), wParam);
+		return 0;
+
+	case WM_RBUTTONDOWN:
+		m_GamePtr->MouseButtonAction(false, true, (int)(LOWORD(lParam) * scaleX), (int)(HIWORD(lParam) * scaleY), wParam);
+		return 0;
+
+	case WM_RBUTTONUP:
+		m_GamePtr->MouseButtonAction(false, false, (int)(LOWORD(lParam) * scaleX), (int)(HIWORD(lParam) * scaleY), wParam);
+		return 0;
+
+	case WM_MOUSEMOVE:
+		m_GamePtr->MouseMove((int)(LOWORD(lParam) * scaleX), (int)(HIWORD(lParam) * scaleY), wParam);
+		return 0;
+
+	case WM_SYSCOMMAND:	// trapping this message prevents a freeze after the ALT key is released
+		if (wParam == SC_KEYMENU) return 0;			// see win32 API : WM_KEYDOWN
+		else break;
+
+	case WM_DESTROY:
+		// User defined code for exiting the game
+		m_GamePtr->GameEnd();
+		// Delete the game engine
+		delete GameEngine::GetSingleton();
+
+		// End the game and exit the application
+		PostQuitMessage(0);
+		return 0;
+
+	case WM_SIZE:
+		if (wParam == SIZE_MAXIMIZED)
+		{
+			// switch off the title bar
+			DWORD dwStyle = GetWindowLong(m_hWindow, GWL_STYLE);
+			dwStyle &= ~WS_CAPTION;
+			SetWindowLong(m_hWindow, GWL_STYLE, dwStyle);
+			//If you have changed certain window data using SetWindowLong, you must call SetWindowPos for the changes to take effect.
+			SetWindowPos(m_hWindow, 0, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOZORDER | SWP_FRAMECHANGED);
 			return 0;
-
-		case WM_ACTIVATE:
-			// Activate/deactivate the game and update the Sleep status
-			if (wParam != WA_INACTIVE)
-			{
-				//Lock hDC
-				hDC = GetDC(hWindow);
-
-				// Do user defined drawing functions
-				//m_GamePtr->GameActivate(hDC, usedClientRect);
-				m_GamePtr->GameActivate();
-
-				// Release HDC
-				ReleaseDC(hWindow, hDC);
-
-				SetSleep(false);
-			}
-			else
-			{			
-				//Lock hDC
-				hDC = GetDC(hWindow);
-
-				// Do user defined drawing functions
-				//m_GamePtr->GameDeactivate(hDC, usedClientRect);
-				m_GamePtr->GameDeactivate();
-
-				// Release HDC
-				ReleaseDC(hWindow, hDC);
-			}
-			return 0;
-
-		case WM_PAINT:
-			//WM_PAINT needs BeginPaint and EndPaint
-			hDC = BeginPaint(hWindow, &ps);
-			if (m_bRunGameLoop == false && m_bInitialized == true) ExecuteDirect2DPaint();
-			EndPaint(hWindow, &ps);
-			
-			//if (m_PaintDoublebuffered)
-			//{
-				//// Get window, rectangle and HDC
-				//hDC = BeginPaint(hWindow, &ps);
-
-				//// Double buffering code
-				//hBufferDC = CreateCompatibleDC(hDC);
-				//// Create the buffer, size is area used by client
-				//hBufferBmp = CreateCompatibleBitmap(hDC, GetWidth(), GetHeight());
-				//hOldBmp = (HBITMAP) SelectObject(hBufferDC, hBufferBmp);
-
-				//// Do user defined drawing functions on the buffer, parameters added
-				//// for ease of drawing
-				//m_HdcDraw = hBufferDC;
-				//m_RectDraw = usedClientRect;
-
-				//m_IsPainting = true;
-				//m_GamePtr->GamePaint(usedClientRect);
-				//m_IsPainting = false;
-
-				//// As a last step copy the memdc to the hdc
-				////BitBlt(hDC, 0, 0, iWidth, iHeight, hBufferDC, 0, 0, SRCCOPY);
-				//StretchBlt(
-				//		hDC, 0,0,windowClientRect.right-windowClientRect.left,windowClientRect.bottom-windowClientRect.top,
-				//		hBufferDC, 0, 0, GetWidth(),GetHeight(),SRCCOPY
-				//);
-
-				//// Reset the old bmp of the buffer, mainly for show since we kill it anyway
-				//SelectObject(hBufferDC, hOldBmp);
-				//// Kill the buffer
-				//DeleteObject(hBufferBmp);
-				//DeleteDC(hBufferDC);
-
-				//// end paint
-				//EndPaint(hWindow, &ps);
-
-			//}
-			//else
-			//{
-
-				//m_HdcDraw = BeginPaint(hWindow, &ps);	
-				//GetClientRect(hWindow, &m_RectDraw);
-
-				//m_IsPainting = true;
-				//m_GamePtr->GamePaint(m_RectDraw);
-				//m_IsPainting = false;
-
-				//EndPaint(hWindow, &ps);
-			//}
-
-			return 0;
-
-		case WM_CTLCOLOREDIT:
-			return SendMessage((HWND) lParam, WM_CTLCOLOREDIT, wParam, lParam);	// delegate this message to the child window
-
-		case WM_CTLCOLORBTN:
-			return SendMessage((HWND) lParam, WM_CTLCOLOREDIT, wParam, lParam);	// delegate this message to the child window
-
-		case WM_LBUTTONDOWN:
-			m_GamePtr->MouseButtonAction(true, true, (int) (LOWORD(lParam) * scaleX), (int) (HIWORD(lParam) * scaleY), wParam);
-			return 0;
-
-		case WM_LBUTTONUP:
-			m_GamePtr->MouseButtonAction(true, false, (int) (LOWORD(lParam) * scaleX), (int)(HIWORD(lParam) * scaleY), wParam);
-			return 0;
-
-		case WM_RBUTTONDOWN:
-			m_GamePtr->MouseButtonAction(false, true, (int) (LOWORD(lParam) * scaleX), (int) (HIWORD(lParam) * scaleY), wParam);
-			return 0;
-
-		case WM_RBUTTONUP:
-			m_GamePtr->MouseButtonAction(false, false, (int) (LOWORD(lParam) * scaleX), (int) (HIWORD(lParam) * scaleY), wParam);
-			return 0;
-
-		case WM_MOUSEMOVE:
-			m_GamePtr->MouseMove((int) (LOWORD(lParam) * scaleX), (int) (HIWORD(lParam) * scaleY), wParam);
-			return 0;
-
-		case WM_SYSCOMMAND:	// trapping this message prevents a freeze after the ALT key is released
-			if (wParam == SC_KEYMENU) return 0;			// see win32 API : WM_KEYDOWN
-			else break;    
-
-		case WM_DESTROY:
-			// User defined code for exiting the game
-			m_GamePtr->GameEnd();
-			// Delete the game engine
-			delete GameEngine::GetSingleton();
-			
-			// End the game and exit the application
-			PostQuitMessage(0);
-			return 0;
-
-		case WM_SIZE:
-			if(wParam==SIZE_MAXIMIZED)
-			{
-				// switch off the title bar
-				DWORD dwStyle = GetWindowLong(m_hWindow, GWL_STYLE);
-				dwStyle &= ~WS_CAPTION;
-				SetWindowLong(m_hWindow, GWL_STYLE, dwStyle);
-				//If you have changed certain window data using SetWindowLong, you must call SetWindowPos for the changes to take effect.
-				SetWindowPos(m_hWindow, 0, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOZORDER | SWP_FRAMECHANGED);
-				return 0;
-			}
-			return 0;
+		}
+		return 0;
 		//use ESC key to go from fullscreen window to smaller window
-		case WM_KEYDOWN:
-			switch (wParam)
+	case WM_KEYDOWN:
+		switch (wParam)
+		{
+		case VK_ESCAPE:
+			// only if in fullscreen
+			RECT WindowRect;
+			GetWindowRect(hWindow, &WindowRect);
+			if ((WindowRect.right - WindowRect.left) >= GetSystemMetrics(SM_CXSCREEN))
 			{
-			case VK_ESCAPE:
-				// only if in fullscreen
-				RECT WindowRect;
-				GetWindowRect(hWindow,&WindowRect);
-				if((WindowRect.right-WindowRect.left)>=GetSystemMetrics(SM_CXSCREEN))
-				{
-					// turns title bar on/off
-					DWORD dwStyle = GetWindowLong(m_hWindow, GWL_STYLE);
-					if (dwStyle & WS_CAPTION) dwStyle &= ~WS_CAPTION;
-					else dwStyle = dwStyle | WS_CAPTION;
-					SetWindowLong(m_hWindow, GWL_STYLE, dwStyle);
-					// this should be called but it messes up GetClientRect().
-					//SetWindowPos(m_hWindow, 0, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOZORDER | SWP_FRAMECHANGED);
+				// turns title bar on/off
+				DWORD dwStyle = GetWindowLong(m_hWindow, GWL_STYLE);
+				if (dwStyle & WS_CAPTION) dwStyle &= ~WS_CAPTION;
+				else dwStyle = dwStyle | WS_CAPTION;
+				SetWindowLong(m_hWindow, GWL_STYLE, dwStyle);
+				// this should be called but it messes up GetClientRect().
+				//SetWindowPos(m_hWindow, 0, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOZORDER | SWP_FRAMECHANGED);
 			}
 			return 0;
 		}
@@ -1227,24 +1227,24 @@ void GameEngine::SetTickPaintRatio(double ratio)
 bool Caller::AddActionListener(Callable* targetPtr)
 {
 	return AddListenerObject(targetPtr);
-}	
+}
 
-bool Caller::RemoveActionListener(Callable* targetPtr) 
+bool Caller::RemoveActionListener(Callable* targetPtr)
 {
 	return RemoveListenerObject(targetPtr);
 }
 
-bool Caller::CallListeners()   
-{			
+bool Caller::CallListeners()
+{
 	for (vector<Callable*>::iterator it = m_TargetList.begin(); it != m_TargetList.end(); ++it)
 	{
-		(*it)->CallAction(this);	
+		(*it)->CallAction(this);
 	}
 
 	return (m_TargetList.size() > 0);
 }
 
-bool Caller::AddListenerObject(Callable* targetPtr) 
+bool Caller::AddListenerObject(Callable* targetPtr)
 {
 	for (vector<Callable*>::iterator it = m_TargetList.begin(); it != m_TargetList.end(); ++it)
 	{
@@ -1254,8 +1254,8 @@ bool Caller::AddListenerObject(Callable* targetPtr)
 	m_TargetList.push_back(targetPtr);
 	return true;
 }
-	
-bool Caller::RemoveListenerObject(Callable* targetPtr) 
+
+bool Caller::RemoveListenerObject(Callable* targetPtr)
 {
 	vector<Callable*>::iterator pos = find(m_TargetList.begin(), m_TargetList.end(), targetPtr); // find algorithm from STL
 
@@ -1276,7 +1276,7 @@ int Audio::m_Nr = 0;
 #pragma warning(disable:4311)
 #pragma warning(disable:4312)
 Audio::Audio(String const& nameRef) : m_Playing(false), m_Paused(false), m_MustRepeat(false), m_hWnd(0), m_Volume(100)
-{	
+{
 	if (nameRef.EndsWith(".mp3") || nameRef.EndsWith(".wav") || nameRef.EndsWith(".mid"))
 	{
 		m_Alias = String("audio") + m_Nr++;
@@ -1296,7 +1296,7 @@ Audio::Audio(int IDAudio, String const& typeRef) : m_Playing(false), m_Paused(fa
 		if (typeRef == "MP3") m_FileName += ".mp3";
 		else if (typeRef == "WAV") m_FileName += ".wav";
 		else m_FileName += ".mid";
-			
+
 		Extract(IDAudio, typeRef, m_FileName);
 
 		Create(m_FileName);
@@ -1313,9 +1313,9 @@ void Audio::Create(const String& nameRef)
 	else if (nameRef.EndsWith(".wav")) sendString = String("open \"") + m_FileName + "\" type waveaudio alias " + m_Alias;
 	else if (nameRef.EndsWith(".mid")) sendString = String("open \"") + m_FileName + "\" type sequencer alias " + m_Alias;
 
-	int result = mciSendString(sendString.ToTChar(), 0, 0, 0);	
+	int result = mciSendString(sendString.ToTChar(), 0, 0, 0);
 	if (result != 0) return;
-	
+
 	sendString = String("set ") + m_Alias + " time format milliseconds";
 	mciSendString(sendString.ToTChar(), 0, 0, 0);
 
@@ -1323,27 +1323,27 @@ void Audio::Create(const String& nameRef)
 	mciSendString(sendString.ToTChar(), buffer, 100, 0);
 
 	m_Duration = String(buffer).ToInteger();
-	
+
 	// Create a window to catch the MM_MCINOTIFY message with
 	m_hWnd = CreateWindow(TEXT("STATIC"), TEXT(""), 0, 0, 0, 0, 0, 0, 0, GameEngine::GetSingleton()->GetInstance(), 0);
-	SetWindowLong(m_hWnd, GWL_WNDPROC, (LONG) AudioProcStatic);	// set the custom message loop (subclassing)
+	SetWindowLong(m_hWnd, GWL_WNDPROC, (LONG)AudioProcStatic);	// set the custom message loop (subclassing)
 	SetWindowLong(m_hWnd, GWL_USERDATA, (LONG) this);			// set this object as the parameter for the Proc
 }
 
-void Audio::Extract(WORD id , String sType, String sFilename)
+void Audio::Extract(WORD id, String sType, String sFilename)
 {
 	CreateDirectory(TEXT("temp\\"), NULL);
 
-    HRSRC hrsrc = FindResource(NULL, MAKEINTRESOURCE(id), sType.ToTChar());
-    HGLOBAL hLoaded = LoadResource( NULL, hrsrc);
-    LPVOID lpLock =  LockResource(hLoaded);
-    DWORD dwSize = SizeofResource(NULL, hrsrc);
-    HANDLE hFile = CreateFile(sFilename.ToTChar(), GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-    DWORD dwByteWritten;
-    WriteFile(hFile, lpLock , dwSize , &dwByteWritten , NULL);
-    CloseHandle(hFile);
-    FreeResource(hLoaded);
-} 
+	HRSRC hrsrc = FindResource(NULL, MAKEINTRESOURCE(id), sType.ToTChar());
+	HGLOBAL hLoaded = LoadResource(NULL, hrsrc);
+	LPVOID lpLock = LockResource(hLoaded);
+	DWORD dwSize = SizeofResource(NULL, hrsrc);
+	HANDLE hFile = CreateFile(sFilename.ToTChar(), GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+	DWORD dwByteWritten;
+	WriteFile(hFile, lpLock, dwSize, &dwByteWritten, NULL);
+	CloseHandle(hFile);
+	FreeResource(hLoaded);
+}
 
 #pragma warning(default:4311)
 #pragma warning(default:4312)
@@ -1372,7 +1372,7 @@ void Audio::Play(int msecStart, int msecStop)
 
 		if (msecStop == -1) QueuePlayCommand(msecStart);
 		else QueuePlayCommand(msecStart, msecStop);
-	}	
+	}
 	else if (m_Paused)
 	{
 		m_Paused = false;
@@ -1383,7 +1383,7 @@ void Audio::Play(int msecStart, int msecStop)
 
 void Audio::Pause()
 {
-	if (m_Playing && !m_Paused) 
+	if (m_Playing && !m_Paused)
 	{
 		m_Paused = true;
 
@@ -1404,7 +1404,7 @@ void Audio::Stop()
 
 void Audio::QueuePlayCommand(int msecStart)
 {
-	QueueCommand(String("play ") + m_Alias + " from " + msecStart +  " notify");
+	QueueCommand(String("play ") + m_Alias + " from " + msecStart + " notify");
 }
 
 void Audio::QueuePlayCommand(int msecStart, int msecStop)
@@ -1455,7 +1455,7 @@ String& Audio::GetName()
 {
 	return m_FileName;
 }
-	
+
 String& Audio::GetAlias()
 {
 	return m_Alias;
@@ -1506,7 +1506,7 @@ int Audio::GetVolume()
 
 bool Audio::Exists()
 {
-	return m_hWnd?true:false;
+	return m_hWnd ? true : false;
 }
 
 int Audio::GetType()
@@ -1515,16 +1515,16 @@ int Audio::GetType()
 }
 
 LRESULT Audio::AudioProcStatic(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
-{	
-	#pragma warning(disable: 4312)
+{
+#pragma warning(disable: 4312)
 	Audio* audio = reinterpret_cast<Audio*>(GetWindowLong(hWnd, GWL_USERDATA));
-	#pragma warning(default: 4312)
+#pragma warning(default: 4312)
 
 	switch (msg)
-	{		
+	{
 	case MM_MCINOTIFY: // message received when an audio file has finished playing - used for repeat function
 
-		if (wParam == MCI_NOTIFY_SUCCESSFUL && audio->IsPlaying()) 
+		if (wParam == MCI_NOTIFY_SUCCESSFUL && audio->IsPlaying())
 		{
 			audio->SwitchPlayingOff();
 
@@ -1532,13 +1532,13 @@ LRESULT Audio::AudioProcStatic(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam
 			else audio->CallListeners();			// notify listeners that the audio file has come to an end
 		}
 	}
-	return 0;	
+	return 0;
 }
 
 //-----------------------------------------------------------------
 // TextBox methods
 //-----------------------------------------------------------------
-#pragma warning(disable:4311)	
+#pragma warning(disable:4311)
 #pragma warning(disable:4312)
 TextBox::TextBox(String const& textRef) : m_X(0), m_Y(0), m_BgColor(RGB(255, 255, 255)), m_ForeColor(RGB(0, 0, 0)), m_BgColorBrush(0), m_Font(0), m_OldFont(0)
 {
@@ -1546,7 +1546,7 @@ TextBox::TextBox(String const& textRef) : m_X(0), m_Y(0), m_BgColor(RGB(255, 255
 	m_hWndEdit = CreateWindow(TEXT("EDIT"), textRef.ToTChar(), WS_BORDER | WS_CHILD | WS_CLIPSIBLINGS | WS_TABSTOP | ES_LEFT | ES_AUTOHSCROLL, 0, 0, 0, 0, GameEngine::GetSingleton()->GetWindow(), NULL, GameEngine::GetSingleton()->GetInstance(), NULL);
 
 	// Set the new WNDPROC for the edit box, store the old value
-	m_procOldEdit = (WNDPROC) SetWindowLong(m_hWndEdit, GWL_WNDPROC, (LONG) EditProcStatic);
+	m_procOldEdit = (WNDPROC)SetWindowLong(m_hWndEdit, GWL_WNDPROC, (LONG)EditProcStatic);
 
 	// Set this object as userdata vor the static wndproc function of the edit box so that it can call members
 	SetWindowLong(m_hWndEdit, GWL_USERDATA, (LONG) this);
@@ -1556,10 +1556,10 @@ TextBox::TextBox() : m_X(0), m_Y(0), m_BgColor(RGB(255, 255, 255)), m_ForeColor(
 {
 	// Create the edit box
 	m_hWndEdit = CreateWindow(TEXT("EDIT"), TEXT(""), WS_BORDER | WS_CHILD | WS_CLIPSIBLINGS | WS_TABSTOP | ES_LEFT | ES_AUTOHSCROLL, 0, 0, 0, 0, GameEngine::GetSingleton()->GetWindow(), NULL, GameEngine::GetSingleton()->GetInstance(), NULL);
-	
+
 	// Set the new WNDPROC for the edit box, store the old value
-	m_procOldEdit = (WNDPROC) SetWindowLong(m_hWndEdit, GWL_WNDPROC, (LONG) EditProcStatic);
-	
+	m_procOldEdit = (WNDPROC)SetWindowLong(m_hWndEdit, GWL_WNDPROC, (LONG)EditProcStatic);
+
 	// Set this object as userdata vor the static wndproc function of the edit box so that it can call members
 	SetWindowLong(m_hWndEdit, GWL_USERDATA, (LONG) this);
 }
@@ -1569,7 +1569,7 @@ TextBox::TextBox() : m_X(0), m_Y(0), m_BgColor(RGB(255, 255, 255)), m_ForeColor(
 TextBox::~TextBox()
 {
 	// release the background brush if necessary
-	if (m_BgColorBrush != 0) 
+	if (m_BgColorBrush != 0)
 	{
 		DeleteObject(m_BgColorBrush);
 		m_BgColorBrush = 0;
@@ -1582,13 +1582,13 @@ TextBox::~TextBox()
 		DeleteObject(m_Font);
 		m_Font = m_OldFont = 0;
 	}
-		
+
 	// release the window resources
 	DestroyWindow(m_hWndEdit);
 	m_hWndEdit = NULL;
 }
 
-int TextBox::GetType() 
+int TextBox::GetType()
 {
 	return Caller::TextBox;
 }
@@ -1610,8 +1610,8 @@ RECT2 TextBox::GetRect()
 
 	result.left = rc.left + m_X;
 	result.right = rc.right + m_X;
-	result.top = rc.top + m_Y; 
-	result.bottom = rc.bottom +=m_Y;
+	result.top = rc.top + m_Y;
+	result.bottom = rc.bottom += m_Y;
 
 	return result;
 }
@@ -1642,11 +1642,11 @@ void TextBox::Hide()
 
 String TextBox::GetText()
 {
-	int textLength = (int) SendMessage(m_hWndEdit, (UINT) WM_GETTEXTLENGTH, 0, 0);
-	
+	int textLength = (int)SendMessage(m_hWndEdit, (UINT)WM_GETTEXTLENGTH, 0, 0);
+
 	TCHAR* bufferPtr = new TCHAR[textLength + 1];
 
-	SendMessage(m_hWndEdit, (UINT) WM_GETTEXT, (WPARAM) textLength + 1, (LPARAM) bufferPtr);
+	SendMessage(m_hWndEdit, (UINT)WM_GETTEXT, (WPARAM)textLength + 1, (LPARAM)bufferPtr);
 
 	String newString(bufferPtr);
 
@@ -1657,7 +1657,7 @@ String TextBox::GetText()
 
 void TextBox::SetText(String const& textRef)
 {
-	SendMessage(m_hWndEdit, WM_SETTEXT, 0, (LPARAM) textRef.ToTChar());
+	SendMessage(m_hWndEdit, WM_SETTEXT, 0, (LPARAM)textRef.ToTChar());
 }
 
 void TextBox::SetFont(String const& fontNameRef, bool bold, bool italic, bool underline, int size)
@@ -1666,17 +1666,17 @@ void TextBox::SetFont(String const& fontNameRef, bool bold, bool italic, bool un
 
 	_tcscpy_s(ft.lfFaceName, sizeof(ft.lfFaceName) / sizeof(TCHAR), fontNameRef.ToTChar());
 	ft.lfStrikeOut = 0;
-	ft.lfUnderline = underline?1:0;
+	ft.lfUnderline = underline ? 1 : 0;
 	ft.lfHeight = size;
-    ft.lfEscapement = 0;
-	ft.lfWeight = bold?FW_BOLD:0;
-	ft.lfItalic = italic?1:0;
+	ft.lfEscapement = 0;
+	ft.lfWeight = bold ? FW_BOLD : 0;
+	ft.lfItalic = italic ? 1 : 0;
 
 	// clean up if another custom font was already in place
 	if (m_Font != 0) { DeleteObject(m_Font); }
 
 	// create the new font. The WM_CTLCOLOREDIT message will set the font when the textbox is about to redraw
-    m_Font = CreateFontIndirect(&ft);
+	m_Font = CreateFontIndirect(&ft);
 
 	// redraw the textbox
 	InvalidateRect(m_hWndEdit, NULL, true);
@@ -1685,7 +1685,7 @@ void TextBox::SetFont(String const& fontNameRef, bool bold, bool italic, bool un
 void TextBox::SetForecolor(int red, int green, int blue)
 {
 	m_ForeColor = RGB(red, green, blue);
-	
+
 	// redraw the textbox
 	InvalidateRect(m_hWndEdit, NULL, true);
 }
@@ -1693,10 +1693,10 @@ void TextBox::SetForecolor(int red, int green, int blue)
 void TextBox::SetBackcolor(int red, int green, int blue)
 {
 	m_BgColor = RGB(red, green, blue);
-	
+
 	if (m_BgColorBrush != 0) DeleteObject(m_BgColorBrush);
 	m_BgColorBrush = CreateSolidBrush(m_BgColor);
-	
+
 	// redraw the textbox
 	InvalidateRect(m_hWndEdit, NULL, true);
 }
@@ -1718,31 +1718,31 @@ HBRUSH TextBox::GetBackcolorBrush()
 
 LRESULT TextBox::EditProcStatic(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-	#pragma warning(disable: 4312)
+#pragma warning(disable: 4312)
 	return reinterpret_cast<TextBox*>(GetWindowLong(hWnd, GWL_USERDATA))->EditProc(hWnd, msg, wParam, lParam);
-	#pragma warning(default: 4312)
+#pragma warning(default: 4312)
 }
 
 LRESULT TextBox::EditProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	switch (msg)
-	{		
+	{
 	case WM_CTLCOLOREDIT:
-		SetBkColor((HDC) wParam, GetBackcolor() );
-		SetTextColor((HDC) wParam, GetForecolor() );
-		if (m_Font != 0) 
+		SetBkColor((HDC)wParam, GetBackcolor());
+		SetTextColor((HDC)wParam, GetForecolor());
+		if (m_Font != 0)
 		{
-			if (m_OldFont == 0) m_OldFont = (HFONT) SelectObject((HDC) wParam, m_Font);
-			else SelectObject((HDC) wParam, m_Font);
+			if (m_OldFont == 0) m_OldFont = (HFONT)SelectObject((HDC)wParam, m_Font);
+			else SelectObject((HDC)wParam, m_Font);
 		}
-		return (LRESULT) GetBackcolorBrush();
+		return (LRESULT)GetBackcolorBrush();
 
-	case WM_CHAR: 
+	case WM_CHAR:
 		if (wParam == VK_TAB) return 0;
 		if (wParam == VK_RETURN) return 0;
 		break;
 
-	case WM_KEYDOWN :
+	case WM_KEYDOWN:
 		switch (wParam)
 		{
 		case VK_TAB:
@@ -1773,7 +1773,7 @@ Button::Button(String const& textRef) : m_X(0), m_Y(0), m_Armed(false), m_Font(0
 	m_hWndButton = CreateWindow(TEXT("BUTTON"), textRef.ToTChar(), WS_BORDER | WS_CHILD | WS_CLIPSIBLINGS | WS_TABSTOP | BS_PUSHBUTTON, 0, 0, 0, 0, GameEngine::GetSingleton()->GetWindow(), NULL, GameEngine::GetSingleton()->GetInstance(), NULL);
 
 	// Set de new WNDPROC for the button, and store the old one
-	m_procOldButton = (WNDPROC) SetWindowLong(m_hWndButton, GWL_WNDPROC, (LONG) ButtonProcStatic);
+	m_procOldButton = (WNDPROC)SetWindowLong(m_hWndButton, GWL_WNDPROC, (LONG)ButtonProcStatic);
 
 	// Store 'this' as data for the Button object so that the static PROC can call the member proc
 	SetWindowLong(m_hWndButton, GWL_USERDATA, (LONG) this);
@@ -1785,7 +1785,7 @@ Button::Button() : m_X(0), m_Y(0), m_Armed(false), m_Font(0), m_OldFont(0)
 	m_hWndButton = CreateWindow(TEXT("BUTTON"), TEXT(""), WS_BORDER | WS_CHILD | WS_CLIPSIBLINGS | WS_TABSTOP | BS_PUSHBUTTON, 0, 0, 0, 0, GameEngine::GetSingleton()->GetWindow(), NULL, GameEngine::GetSingleton()->GetInstance(), NULL);
 
 	// Set de new WNDPROC for the button, and store the old one
-	m_procOldButton = (WNDPROC) SetWindowLong(m_hWndButton, GWL_WNDPROC, (LONG) ButtonProcStatic);
+	m_procOldButton = (WNDPROC)SetWindowLong(m_hWndButton, GWL_WNDPROC, (LONG)ButtonProcStatic);
 
 	// Store 'this' as data for the Button object so that the static PROC can call the member proc
 	SetWindowLong(m_hWndButton, GWL_USERDATA, (LONG) this);
@@ -1802,13 +1802,13 @@ Button::~Button()
 		DeleteObject(m_Font);
 		m_Font = m_OldFont = 0;
 	}
-		
+
 	// release the window resource
 	DestroyWindow(m_hWndButton);
-	m_hWndButton = NULL;	
+	m_hWndButton = NULL;
 }
 
-int Button::GetType() 
+int Button::GetType()
 {
 	return Caller::Button;
 }
@@ -1827,10 +1827,10 @@ RECT2 Button::GetRect()
 	RECT2 result;
 
 	GetClientRect(m_hWndButton, &rc);
-	
+
 	result.left = rc.left + m_X;
 	result.right = rc.right + m_X;
-	result.top = rc.top + m_Y; 
+	result.top = rc.top + m_Y;
 	result.bottom = rc.bottom + m_Y;
 
 	return result;
@@ -1862,11 +1862,11 @@ void Button::Hide()
 
 String Button::GetText()
 {
-	int textLength = (int) SendMessage(m_hWndButton, (UINT) WM_GETTEXTLENGTH, 0, 0);
-	
+	int textLength = (int)SendMessage(m_hWndButton, (UINT)WM_GETTEXTLENGTH, 0, 0);
+
 	TCHAR* bufferPtr = new TCHAR[textLength + 1];
 
-	SendMessage(m_hWndButton, (UINT) WM_GETTEXT, (WPARAM) textLength + 1, (LPARAM) bufferPtr);
+	SendMessage(m_hWndButton, (UINT)WM_GETTEXT, (WPARAM)textLength + 1, (LPARAM)bufferPtr);
 
 	String newString(bufferPtr);
 
@@ -1877,7 +1877,7 @@ String Button::GetText()
 
 void Button::SetText(String const& textRef)
 {
-	SendMessage(m_hWndButton, WM_SETTEXT, 0, (LPARAM) textRef.ToTChar());
+	SendMessage(m_hWndButton, WM_SETTEXT, 0, (LPARAM)textRef.ToTChar());
 }
 
 void Button::SetFont(String const& fontNameRef, bool bold, bool italic, bool underline, int size)
@@ -1886,17 +1886,17 @@ void Button::SetFont(String const& fontNameRef, bool bold, bool italic, bool und
 
 	_tcscpy_s(ft.lfFaceName, sizeof(ft.lfFaceName) / sizeof(TCHAR), fontNameRef.ToTChar());
 	ft.lfStrikeOut = 0;
-	ft.lfUnderline = underline?1:0;
+	ft.lfUnderline = underline ? 1 : 0;
 	ft.lfHeight = size;
-    ft.lfEscapement = 0;
-	ft.lfWeight = bold?FW_BOLD:0;
-	ft.lfItalic = italic?1:0;
+	ft.lfEscapement = 0;
+	ft.lfWeight = bold ? FW_BOLD : 0;
+	ft.lfItalic = italic ? 1 : 0;
 
 	// clean up if another custom font was already in place
 	if (m_Font != 0) { DeleteObject(m_Font); }
 
 	// create the new font. The WM_CTLCOLOREDIT message will set the font when the button is about to redraw
-    m_Font = CreateFontIndirect(&ft);
+	m_Font = CreateFontIndirect(&ft);
 
 	// redraw the button
 	InvalidateRect(m_hWndButton, NULL, true);
@@ -1904,9 +1904,9 @@ void Button::SetFont(String const& fontNameRef, bool bold, bool italic, bool und
 
 LRESULT Button::ButtonProcStatic(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-	#pragma warning(disable: 4312)
+#pragma warning(disable: 4312)
 	return reinterpret_cast<Button*>(GetWindowLong(hWnd, GWL_USERDATA))->ButtonProc(hWnd, msg, wParam, lParam);
-	#pragma warning(default: 4312)
+#pragma warning(default: 4312)
 }
 
 LRESULT Button::ButtonProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -1914,22 +1914,22 @@ LRESULT Button::ButtonProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	switch (msg)
 	{
 	case WM_CTLCOLOREDIT:
-		if (m_Font != 0) 
+		if (m_Font != 0)
 		{
-			if (m_OldFont == 0) m_OldFont = (HFONT) SelectObject((HDC) wParam, m_Font);
-			else SelectObject((HDC) wParam, m_Font);
+			if (m_OldFont == 0) m_OldFont = (HFONT)SelectObject((HDC)wParam, m_Font);
+			else SelectObject((HDC)wParam, m_Font);
 		}
 		return 0;
 
-	case WM_CHAR: 
+	case WM_CHAR:
 		if (wParam == VK_TAB) return 0;
 		if (wParam == VK_RETURN) return 0;
 		break;
 
-	case WM_KEYDOWN :
+	case WM_KEYDOWN:
 		switch (wParam)
 		{
-		case VK_TAB:			
+		case VK_TAB:
 			if (GameEngine::GetSingleton()->IsKeyDown(VK_SHIFT)) GameEngine::GetSingleton()->TabPrevious(hWnd);
 			else GameEngine::GetSingleton()->TabNext(hWnd);
 			return 0;
@@ -1941,11 +1941,11 @@ LRESULT Button::ButtonProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			CallListeners();
 		}
 		break;
-	case WM_LBUTTONDOWN :
+	case WM_LBUTTONDOWN:
 	case WM_LBUTTONDBLCLK:					// clicking fast will throw LBUTTONDBLCLK's as well as LBUTTONDOWN's, you need to capture both to catch all button clicks
 		m_Armed = true;
 		break;
-	case WM_LBUTTONUP :
+	case WM_LBUTTONUP:
 		if (m_Armed)
 		{
 			RECT rc;
@@ -1979,7 +1979,7 @@ Timer::~Timer()
 	// no objects to delete
 }
 
-int Timer::GetType() 
+int Timer::GetType()
 {
 	return Caller::Timer;
 }
@@ -1988,18 +1988,18 @@ void Timer::Start()
 {
 	if (m_IsRunning == false)
 	{
-		CreateTimerQueueTimer(&m_TimerHandle, NULL, TimerProcStatic, (void*) this, m_Delay, m_Delay, WT_EXECUTEINTIMERTHREAD);	
+		CreateTimerQueueTimer(&m_TimerHandle, NULL, TimerProcStatic, (void*) this, m_Delay, m_Delay, WT_EXECUTEINTIMERTHREAD);
 		m_IsRunning = true;
 	}
 }
 
 void Timer::Stop()
-{	
+{
 	if (m_IsRunning == true)
 	{
-		DeleteTimerQueueTimer(NULL, m_TimerHandle, NULL);  
+		DeleteTimerQueueTimer(NULL, m_TimerHandle, NULL);
 		//CloseHandle (m_TimerHandle);		DeleteTimerQueueTimer automatically closes the handle? MSDN Documentation seems to suggest this
-		
+
 		m_IsRunning = false;
 	}
 }
@@ -2038,22 +2038,22 @@ void CALLBACK Timer::TimerProcStatic(void* lpParameter, BOOLEAN TimerOrWaitFired
 //-----------------------------------------------------------------
 
 String::String(wchar_t const* wideTextPtr) : m_Precision(-1)
-{		
-	m_Length = (int) wcslen(wideTextPtr) + 1; // include room for null terminator
-	m_TextPtr = new TCHAR[m_Length]; 
+{
+	m_Length = (int)wcslen(wideTextPtr) + 1; // include room for null terminator
+	m_TextPtr = new TCHAR[m_Length];
 
-	if (sizeof(TCHAR) == 2) _tcscpy_s(m_TextPtr, m_Length, (TCHAR*) wideTextPtr);
-	else WideCharToMultiByte(CP_ACP, 0, wideTextPtr, -1, (char*) m_TextPtr, m_Length, NULL, NULL);
+	if (sizeof(TCHAR) == 2) _tcscpy_s(m_TextPtr, m_Length, (TCHAR*)wideTextPtr);
+	else WideCharToMultiByte(CP_ACP, 0, wideTextPtr, -1, (char*)m_TextPtr, m_Length, NULL, NULL);
 }
 
 String::String(char const* singleTextPtr) : m_Precision(-1)
 {
-	m_Length = (int) strlen(singleTextPtr) + 1; // inlude room for null terminator
+	m_Length = (int)strlen(singleTextPtr) + 1; // inlude room for null terminator
 
-	m_TextPtr = new TCHAR[m_Length]; 
-	
-	if (sizeof(TCHAR) == 1) strcpy_s((char*) m_TextPtr, m_Length, singleTextPtr);
-	else MultiByteToWideChar(CP_ACP, 0, singleTextPtr, -1, (wchar_t*) m_TextPtr, m_Length * 2);
+	m_TextPtr = new TCHAR[m_Length];
+
+	if (sizeof(TCHAR) == 1) strcpy_s((char*)m_TextPtr, m_Length, singleTextPtr);
+	else MultiByteToWideChar(CP_ACP, 0, singleTextPtr, -1, (wchar_t*)m_TextPtr, m_Length * 2);
 }
 
 String::String(wchar_t character) : m_Precision(-1)
@@ -2061,7 +2061,7 @@ String::String(wchar_t character) : m_Precision(-1)
 	m_Length = 2; // include room for null terminator
 	m_TextPtr = new TCHAR[m_Length];
 
-	m_TextPtr[0] = (TCHAR) character;
+	m_TextPtr[0] = (TCHAR)character;
 	m_TextPtr[1] = '\0';
 }
 
@@ -2075,7 +2075,7 @@ String::String(char character) : m_Precision(-1)
 }
 
 String::String(String const& sRef) : m_Precision(sRef.m_Precision)
-{   
+{
 	m_Length = sRef.GetLength() + 1; // include room for null terminator
 	m_TextPtr = new TCHAR[m_Length];
 
@@ -2099,11 +2099,11 @@ String& String::operator=(String const& sRef)
 	}
 	return *this;
 }
-	
+
 String& String::operator+=(String const& sRef)
 {
 	m_Length = this->GetLength() + sRef.GetLength() + 1;
-	
+
 	TCHAR* buffer = new TCHAR[m_Length];
 
 	_tcscpy_s(buffer, m_Length, m_TextPtr);
@@ -2126,7 +2126,7 @@ String& String::operator+=(char* singleTextPtr)
 }
 
 String& String::operator+=(int number)
-{	
+{
 	char buffer[65]; // an int will never take more than 65 characters (int64 is max 20 characters)
 
 	_itoa_s(number, buffer, sizeof(buffer), 10);
@@ -2135,32 +2135,32 @@ String& String::operator+=(int number)
 }
 
 String& String::operator+=(size_t number)
-{	
+{
 	char buffer[65]; // an int will never take more than 65 characters (int64 is max 20 characters)
 
-	_ultoa_s((unsigned long) number, buffer, sizeof(buffer), 10);
-	
+	_ultoa_s((unsigned long)number, buffer, sizeof(buffer), 10);
+
 	return *this += String(buffer);
 }
 
 String& String::operator+=(double number)
 {
-    tstringstream buffer;
-	if (m_Precision != -1) 
+	tstringstream buffer;
+	if (m_Precision != -1)
 		buffer << std::fixed << std::setprecision(m_Precision);
-    buffer << number;
-    tstring result;
-    buffer >> result;
-    return *this += String(result.c_str());
+	buffer << number;
+	tstring result;
+	buffer >> result;
+	return *this += String(result.c_str());
 }
 
 String& String::operator+=(wchar_t character)
-{		
+{
 	return *this += String(character);
 }
 
 String& String::operator+=(char character)
-{		
+{
 	return *this += String(character);
 }
 
@@ -2210,7 +2210,7 @@ String String::operator+(size_t number)
 }
 
 String String::operator+(double number)
-{ 
+{
 	String newString = *this;
 
 	newString += number;
@@ -2219,7 +2219,7 @@ String String::operator+(double number)
 }
 
 String String::operator+(wchar_t character)
-{ 
+{
 	String newString = *this;
 
 	newString += character;
@@ -2228,7 +2228,7 @@ String String::operator+(wchar_t character)
 }
 
 String String::operator+(char character)
-{ 
+{
 	String newString = *this;
 
 	newString += character;
@@ -2249,7 +2249,7 @@ bool String::operator==(String const& sRef) const
 TCHAR String::CharAt(int index) const
 {
 	if (index > this->GetLength() - 1) return 0;
-	
+
 	return m_TextPtr[index];
 }
 
@@ -2261,20 +2261,20 @@ String String::Replace(TCHAR oldChar, TCHAR newChar) const
 	{
 		if (newString.m_TextPtr[count] == oldChar) newString.m_TextPtr[count] = newChar;
 	}
-	
+
 	return newString;
 }
 
 String String::SubString(int index) const
 {
-	if (index > this->GetLength() - 1) return String(""); 
+	if (index > this->GetLength() - 1) return String("");
 
 	return String(m_TextPtr + index);
 }
 
 String String::SubString(int index, int length) const
 {
-	if (index + length - 1 > this->GetLength() - 1) return String(""); 
+	if (index + length - 1 > this->GetLength() - 1) return String("");
 
 	String newString = *this;
 	newString.m_TextPtr[index + length] = TEXT('\0');
@@ -2284,7 +2284,7 @@ String String::SubString(int index, int length) const
 
 String String::ToLowerCase() const
 {
-	String newString = *this;	
+	String newString = *this;
 
 	for (int count = 0; count < newString.GetLength(); count++)
 	{
@@ -2298,7 +2298,7 @@ String String::ToLowerCase() const
 
 String String::ToUpperCase() const
 {
-	String newString = *this;	
+	String newString = *this;
 
 	for (int count = 0; count < newString.GetLength(); count++)
 	{
@@ -2343,7 +2343,7 @@ int String::LastIndexOf(TCHAR character) const
 
 bool String::StartsWith(String const& sRef) const
 {
-	// return false if 2nd string is longer than 1st string 
+	// return false if 2nd string is longer than 1st string
 	if (this->GetLength() < sRef.GetLength()) return false;
 
 	// check individual characters
@@ -2362,11 +2362,11 @@ bool String::StartsWith(String const& sRef) const
 
 bool String::EndsWith(String const& sRef) const
 {
-	// return false if 2nd string is longer than 1st string 
+	// return false if 2nd string is longer than 1st string
 	if (this->GetLength() < sRef.GetLength()) return false;
 
 	String temp = this->SubString(this->GetLength() - sRef.GetLength());
-	
+
 	return sRef.Equals(temp);
 }
 
@@ -2379,9 +2379,9 @@ bool String::Equals(String const& sRef) const
 {
 	if (sRef.GetLength() != this->GetLength()) return false;
 
-	return _tcscmp(this->ToTChar(), sRef.ToTChar())?false:true; // return true if cmp returns 0, false if not
+	return _tcscmp(this->ToTChar(), sRef.ToTChar()) ? false : true; // return true if cmp returns 0, false if not
 }
- 
+
 String& String::SetPrecision(int precision)
 {
 	m_Precision = precision;
@@ -2429,10 +2429,10 @@ void GameEngine::CreateD2DFactory()
 	HRESULT hr;
 	// Create a Direct2D factory.
 	ID2D1Factory* localD2DFactoryPtr;
-	if(!m_D2DFactoryPtr)
+	if (!m_D2DFactoryPtr)
 	{
 		hr = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &localD2DFactoryPtr);
-		if(FAILED(hr))
+		if (FAILED(hr))
 		{
 			MessageBox("Create D2D Factory Failed");
 			exit(-1);
@@ -2446,10 +2446,10 @@ void GameEngine::CreateWICFactory()
 	HRESULT hr;
 	// Create a WIC factory if it does not exists
 	IWICImagingFactory* localWICFactoryPtr;
-	if(!m_WICFactoryPtr)
+	if (!m_WICFactoryPtr)
 	{
 		hr = CoCreateInstance(CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&localWICFactoryPtr));
-		if(FAILED(hr))
+		if (FAILED(hr))
 		{
 			MessageBox("Create WIC Factory Failed");
 			exit(-1);
@@ -2461,12 +2461,12 @@ void GameEngine::CreateWICFactory()
 void GameEngine::CreateWriteFactory()
 {
 	HRESULT hr;
-    // Create a DirectWrite factory.
+	// Create a DirectWrite factory.
 	IDWriteFactory *localDWriteFactoryPtr;
- 	if(!m_DWriteFactoryPtr)
+	if (!m_DWriteFactoryPtr)
 	{
-	   hr = DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(localDWriteFactoryPtr), reinterpret_cast<IUnknown **>(&localDWriteFactoryPtr));
-		if(FAILED(hr))
+		hr = DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(localDWriteFactoryPtr), reinterpret_cast<IUnknown **>(&localDWriteFactoryPtr));
+		if (FAILED(hr))
 		{
 			MessageBox("Create WRITE Factory Failed");
 			exit(-1);
@@ -2487,16 +2487,16 @@ void GameEngine::CreateDeviceResources()
 
 	if (!m_RenderTargetPtr)
 	{
-		D2D1_SIZE_U size = D2D1::SizeU((UINT) GetWidth(), (UINT) GetHeight());
+		D2D1_SIZE_U size = D2D1::SizeU((UINT)GetWidth(), (UINT)GetHeight());
 
 		// Create a Direct2D render target.
 		// EndPaint waits till VBLank !!! when OPTIONS_NONE
 		//use D2D1_PRESENT_OPTIONS::D2D1_PRESENT_OPTIONS_NONE for vblank sync
 		//and D2D1_PRESENT_OPTIONS::D2D1_PRESENT_OPTIONS_IMMEDIATELY for no waiting
-		//D2D1_PRESENT_OPTIONS_RETAIN_CONTENTS   
+		//D2D1_PRESENT_OPTIONS_RETAIN_CONTENTS
 		D2D1_PRESENT_OPTIONS pres_opt;
 		//if(m_GameConfiguratorPtr->GetWaitForDisplayRefresh())pres_opt = D2D1_PRESENT_OPTIONS_NONE;
-		//else 
+		//else
 		pres_opt = D2D1_PRESENT_OPTIONS_IMMEDIATELY;
 
 		//Peter: DPI setting van Display kan verschillen, waardoor client area niet correct afmetingen heeft
@@ -2506,13 +2506,13 @@ void GameEngine::CreateDeviceResources()
 		ID2D1HwndRenderTarget *localRenderTargetPtr;
 		hr = m_D2DFactoryPtr->CreateHwndRenderTarget(rtp, D2D1::HwndRenderTargetProperties(m_hWindow, size, pres_opt), &localRenderTargetPtr);
 
-		if(FAILED(hr))
+		if (FAILED(hr))
 		{
 			MessageBox("Create CreateDeviceResources Failed");
 			exit(-1);
 		}
 		m_RenderTargetPtr = localRenderTargetPtr;
-		
+
 		//set alias mode
 		m_RenderTargetPtr->SetAntialiasMode(m_AntialiasMode);
 
@@ -2538,7 +2538,7 @@ void GameEngine::D2DBeginPaint()
 {
 	ID2D1HwndRenderTarget *renderTargetPtr = m_RenderTargetPtr;
 
-	if(renderTargetPtr)
+	if (renderTargetPtr)
 	{
 		renderTargetPtr->BeginDraw();
 		renderTargetPtr->SetTransform(D2D1::Matrix3x2F::Identity());
@@ -2548,7 +2548,7 @@ void GameEngine::D2DBeginPaint()
 
 bool GameEngine::D2DEndPaint()
 {
-	HRESULT hr=S_OK;
+	HRESULT hr = S_OK;
 	ID2D1HwndRenderTarget *renderTargetPtr = m_RenderTargetPtr;
 	hr = renderTargetPtr->EndDraw();
 
@@ -2568,8 +2568,8 @@ bool GameEngine::D2DEndPaint()
 StopWatch::StopWatch() : m_SecondsPerCount(0.0), m_DeltaTime(-1.0), m_BaseTime(0), m_PausedTime(0), m_PrevTime(0), m_CurrTime(0), m_bStopped(false)
 {
 	__int64 countsPerSec;
-	QueryPerformanceFrequency((LARGE_INTEGER*) &countsPerSec);
-	m_SecondsPerCount = 1.0 / (double) countsPerSec;
+	QueryPerformanceFrequency((LARGE_INTEGER*)&countsPerSec);
+	m_SecondsPerCount = 1.0 / (double)countsPerSec;
 }
 
 StopWatch::~StopWatch()
@@ -2584,36 +2584,36 @@ double StopWatch::GetGameTime()
 	// ----*---------------*------------------------------*------> time
 	//  mBaseTime       mStopTime                      mCurrTime
 
-	if( m_bStopped )
+	if (m_bStopped)
 	{
-		return (double) ((m_StopTime - m_BaseTime) * m_SecondsPerCount);
+		return (double)((m_StopTime - m_BaseTime) * m_SecondsPerCount);
 	}
 
 	// The distance mCurrTime - mBaseTime includes paused time,
-	// which we do not want to count.  To correct this, we can subtract 
-	// the paused time from mCurrTime:  
+	// which we do not want to count.  To correct this, we can subtract
+	// the paused time from mCurrTime:
 	//
-	//  (mCurrTime - mPausedTime) - mBaseTime 
+	//  (mCurrTime - mPausedTime) - mBaseTime
 	//
 	//                     |<-------d------->|
 	// ----*---------------*-----------------*------------*------> time
 	//  mBaseTime       mStopTime        startTime     mCurrTime
-	
+
 	else
 	{
-		return (double) (((m_CurrTime - m_PausedTime) - m_BaseTime) * m_SecondsPerCount);
+		return (double)(((m_CurrTime - m_PausedTime) - m_BaseTime) * m_SecondsPerCount);
 	}
 }
 
 double StopWatch::GetDeltaTime()
 {
-	return (double) m_DeltaTime;
+	return (double)m_DeltaTime;
 }
 
 void StopWatch::Reset()
 {
 	__int64 currTime;
-	QueryPerformanceCounter((LARGE_INTEGER*) &currTime);
+	QueryPerformanceCounter((LARGE_INTEGER*)&currTime);
 
 	m_BaseTime = currTime;
 	m_PrevTime = currTime;
@@ -2624,47 +2624,47 @@ void StopWatch::Reset()
 void StopWatch::Start()
 {
 	__int64 startTime;
-	QueryPerformanceCounter((LARGE_INTEGER*) &startTime);
+	QueryPerformanceCounter((LARGE_INTEGER*)&startTime);
 
 
 	// Accumulate the time elapsed between stop and start pairs.
 	//
 	//                     |<-------d------->|
 	// ----*---------------*-----------------*------------> time
-	//  mBaseTime       mStopTime        startTime     
+	//  mBaseTime       mStopTime        startTime
 
-	if( m_bStopped )
+	if (m_bStopped)
 	{
-		m_PausedTime += (startTime - m_StopTime);	
+		m_PausedTime += (startTime - m_StopTime);
 
 		m_PrevTime = startTime;
 		m_StopTime = 0;
-		m_bStopped  = false;
+		m_bStopped = false;
 	}
 }
 
 void StopWatch::Stop()
 {
-	if( !m_bStopped )
+	if (!m_bStopped)
 	{
 		__int64 currTime;
-		QueryPerformanceCounter((LARGE_INTEGER*) &currTime);
+		QueryPerformanceCounter((LARGE_INTEGER*)&currTime);
 
 		m_StopTime = currTime;
-		m_bStopped  = true;
+		m_bStopped = true;
 	}
 }
 
 void StopWatch::Tick()
 {
-	if( m_bStopped )
+	if (m_bStopped)
 	{
 		m_DeltaTime = 0.0;
 		return;
 	}
 
 	__int64 currTime;
-	QueryPerformanceCounter((LARGE_INTEGER*) &currTime);
+	QueryPerformanceCounter((LARGE_INTEGER*)&currTime);
 	m_CurrTime = currTime;
 
 	// Time difference between this frame and the previous.
@@ -2673,18 +2673,18 @@ void StopWatch::Tick()
 	// Prepare for next frame.
 	m_PrevTime = m_CurrTime;
 
-	// Force nonnegative.  The DXSDK's CDXUTTimer mentions that if the 
+	// Force nonnegative.  The DXSDK's CDXUTTimer mentions that if the
 	// processor goes into a power save mode or we get shuffled to another
 	// processor, then mDeltaTime can be negative.
-	if(m_DeltaTime < 0.0)
+	if (m_DeltaTime < 0.0)
 	{
 		m_DeltaTime = 0.0;
 	}
-} 
+}
 
 bool StopWatch::IsStopped()
-{ 
-	return m_bStopped; 
+{
+	return m_bStopped;
 }
 
 //---------------------------
@@ -2705,7 +2705,7 @@ Bitmap::Bitmap(const String& fileName) : m_BitmapPtr(0), m_ConvertorPtr(0), m_Op
 		hr = renderTargetPtr->CreateBitmapFromWicBitmap(m_ConvertorPtr, &m_BitmapPtr);
 	}
 
-	if(FAILED(hr))
+	if (FAILED(hr))
 	{
 		//show messagebox and leave the program
 		GameEngine::GetSingleton()->MessageBox(String("IMAGE LOADING ERROR File ") + fileName);
@@ -2720,16 +2720,16 @@ Bitmap::Bitmap(int resourceID) : m_BitmapPtr(0), m_ConvertorPtr(0), m_Opacity(1)
 	ID2D1RenderTarget* renderTargetPtr = GameEngine::GetSingleton()->GetHwndRenderTarget();
 	IWICImagingFactory* iWICFactoryPtr = GameEngine::GetSingleton()->GetWICImagingFactory();
 
-	HRESULT hr = LoadResourceBitmap(renderTargetPtr, iWICFactoryPtr, (unsigned int) resourceID, _T("IMAGE"), &m_ConvertorPtr);
+	HRESULT hr = LoadResourceBitmap(renderTargetPtr, iWICFactoryPtr, (unsigned int)resourceID, _T("IMAGE"), &m_ConvertorPtr);
 	if (SUCCEEDED(hr))
 	{
 		//Create a Direct2D bitmap from the WIC bitmap.
 		hr = renderTargetPtr->CreateBitmapFromWicBitmap(m_ConvertorPtr, &m_BitmapPtr);
 	}
 
-	if(FAILED(hr))
+	if (FAILED(hr))
 	{
-		//show messagebox 
+		//show messagebox
 		GameEngine::GetSingleton()->MessageBox(String("RESOURCE IMAGE LOADING ERROR File. ID: ") + resourceID);
 	}
 }
@@ -2857,13 +2857,13 @@ HRESULT Bitmap::LoadBitmapFromFile(ID2D1RenderTarget *renderTargetPtr, IWICImagi
 			{
 				if (destinationWidth == 0)
 				{
-					FLOAT scalar = (FLOAT) destinationHeight / (FLOAT) originalHeight;
-					destinationWidth = (UINT) (scalar * (FLOAT) originalWidth);
+					FLOAT scalar = (FLOAT)destinationHeight / (FLOAT)originalHeight;
+					destinationWidth = (UINT)(scalar * (FLOAT)originalWidth);
 				}
 				else if (destinationHeight == 0)
 				{
-					FLOAT scalar = (FLOAT) destinationWidth / (FLOAT) originalWidth;
-					destinationHeight = (UINT) (scalar * (FLOAT) originalHeight);
+					FLOAT scalar = (FLOAT)destinationWidth / (FLOAT)originalWidth;
+					destinationHeight = (UINT)(scalar * (FLOAT)originalHeight);
 				}
 
 				hr = wICFactoryPtr->CreateBitmapScaler(&scalerPtr);
@@ -2891,17 +2891,17 @@ HRESULT Bitmap::LoadBitmapFromFile(ID2D1RenderTarget *renderTargetPtr, IWICImagi
 }
 
 ID2D1Bitmap* Bitmap::GetBitmapPtr()
-{ 
+{
 	return m_BitmapPtr;
 }
 
 int Bitmap::GetWidth()
-{ 
+{
 	return m_BitmapPtr->GetPixelSize().width;
 }
 
 int	Bitmap::GetHeight()
-{ 
+{
 	return m_BitmapPtr->GetPixelSize().height;
 }
 
@@ -2930,9 +2930,9 @@ void Bitmap::SetTransparencyColor(int red, int green, int blue)
 
 	for (unsigned int count = 0; count < width * height; ++count)
 	{
-		if (RGB(pixelsPtr[count * 4 + 2], pixelsPtr[count * 4 + 1], pixelsPtr[count * 4 ]) == color) // if the color of this pixel == transparency color
+		if (RGB(pixelsPtr[count * 4 + 2], pixelsPtr[count * 4 + 1], pixelsPtr[count * 4]) == color) // if the color of this pixel == transparency color
 		{
-			((int*) pixelsPtr)[count] = 0; // set all four values to zero, this assumes sizeof(int) == 4 on this system
+			((int*)pixelsPtr)[count] = 0; // set all four values to zero, this assumes sizeof(int) == 4 on this system
 											// setting values to zero means premultiplying the RGB values to an alpha of 0
 		}
 	}
@@ -2942,18 +2942,18 @@ void Bitmap::SetTransparencyColor(int red, int green, int blue)
 	IWICBitmap* iWICBitmapPtr = 0;
 	HRESULT hr = iWICFactoryPtr->CreateBitmapFromMemory(width, height, GUID_WICPixelFormat32bppPBGRA, bitmapStride, size, pixelsPtr, &iWICBitmapPtr);
 	delete[] pixelsPtr; //destroy buffer
-	if(hr==S_OK)
+	if (hr == S_OK)
 	{
 		ID2D1RenderTarget *renderTargetPtr = GameEngine::GetSingleton()->GetHwndRenderTarget();
 		if (m_BitmapPtr != 0) m_BitmapPtr->Release();
 		renderTargetPtr->CreateBitmapFromWicBitmap(iWICBitmapPtr, &m_BitmapPtr);
 		iWICBitmapPtr->Release();
 	}
-} 
+}
 
 bool Bitmap::Exists()
 {
-	return m_BitmapPtr?true:false;
+	return m_BitmapPtr ? true : false;
 }
 
 
@@ -2980,14 +2980,14 @@ void TextFormat::LoadTextFormat(const wchar_t* fontName, float size)
 {
 	HRESULT hr;
 	// Create a DirectWrite text format object.
-    hr = GameEngine::GetSingleton()->GetDWriteFactory()->CreateTextFormat(fontName,	NULL, DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, size, L"", &m_TextFormatPtr);
+	hr = GameEngine::GetSingleton()->GetDWriteFactory()->CreateTextFormat(fontName, NULL, DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, size, L"", &m_TextFormatPtr);
 
 	if (SUCCEEDED(hr))
-    {
-        // align left and top the text horizontally and vertically.
-        m_TextFormatPtr->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
-        m_TextFormatPtr->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
-    }
+	{
+		// align left and top the text horizontally and vertically.
+		m_TextFormatPtr->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
+		m_TextFormatPtr->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
+	}
 	else
 	{
 		MessageBoxW(NULL, fontName, L"TEXTFORMAT BUILDING ERROR", MB_ICONERROR);
@@ -2995,7 +2995,7 @@ void TextFormat::LoadTextFormat(const wchar_t* fontName, float size)
 	}
 }
 
-IDWriteTextFormat* TextFormat::GetTextFormat() 
+IDWriteTextFormat* TextFormat::GetTextFormat()
 {
 	return m_TextFormatPtr;
 }
@@ -3052,8 +3052,8 @@ bool SVGLoader::LoadGeometryFromSvgFile(String svgFilePath, ID2D1Geometry*& geom
 {
 	// open the file, close if not found
 	tifstream svgFile(svgFilePath.ToTChar());
-		
-	if (!svgFile) 
+
+	if (!svgFile)
 	{
 		GameEngine::GetSingleton()->MessageBox(String("Failed to load geometry from file ") + svgFilePath);
 		return false;
@@ -3075,12 +3075,12 @@ bool SVGLoader::LoadGeometryFromSvgFile(String svgFilePath, ID2D1Geometry*& geom
 		// extract the transform information, if present
 		tstring sTransformInfo;
 		bool result = ExtractTransformInformation(svgText, sTransformInfo);
-			
+
 		// extract the geometry information, exit if not found
 		tstring sGeometryInfo;
 		result = ExtractPathInformation(svgText, sGeometryInfo);
 		if (result == false)
-		{			
+		{
 			GameEngine::GetSingleton()->MessageBox(String("Malformed geometry information in file ") + svgFilePath);
 			return false;
 		}
@@ -3116,7 +3116,7 @@ bool SVGLoader::ExtractTransformInformation(tstring& svgTextRef, tstring& sTrans
 
 	tstring::iterator posOpeningDoubleQuote = find(posTransform, svgTextRef.end(), _T('\"'));
 	tstring::iterator posClosingDoubleQuote = find(posOpeningDoubleQuote + 1, svgTextRef.end(), _T('\"'));
-	
+
 	sTransformInfoRef = tstring(posOpeningDoubleQuote + 1, posClosingDoubleQuote);
 
 	return true;
@@ -3175,22 +3175,22 @@ bool SVGLoader::ReadSvgFromData(ID2D1Factory* factoryPtr, tstring& sTransformInf
 
 	ID2D1TransformedGeometry* transformedGeometryPtr;
 	hr = factoryPtr->CreateTransformedGeometry(pathGeometryPtr, pathTransform.ToMatrix3x2F(), &transformedGeometryPtr);
-	if( FAILED(hr) ) 
+	if (FAILED(hr))
 	{
 		GameEngine::GetSingleton()->MessageBox("CreateTransformedGeometry failed");
 		return false;
 	}
 
 	outGeometryArr.push_back(transformedGeometryPtr);
-	
+
 	return GetGeometryOrGroup(factoryPtr, outGeometryArr, geometryPtrRef);
 }
 
 bool SVGLoader::GetGeometryOrGroup(ID2D1Factory* factoryPtr, std::vector<ID2D1Geometry*>& childrenRef, ID2D1Geometry*& geometryPtrRef)
 {
-	if( !childrenRef.empty() )
+	if (!childrenRef.empty())
 	{
-		if( childrenRef.size() == 1 )
+		if (childrenRef.size() == 1)
 		{
 			geometryPtrRef = childrenRef[0];
 		}
@@ -3198,7 +3198,7 @@ bool SVGLoader::GetGeometryOrGroup(ID2D1Factory* factoryPtr, std::vector<ID2D1Ge
 		{
 			ID2D1GeometryGroup* geometryGroupPtr;
 			HRESULT hr = factoryPtr->CreateGeometryGroup(D2D1_FILL_MODE_WINDING, &childrenRef[0], childrenRef.size(), &geometryGroupPtr);
-			if( FAILED(hr) ) 
+			if (FAILED(hr))
 			{
 				GameEngine::GetSingleton()->MessageBox("CreateTransformedGeometry failed");
 				return false;
@@ -3213,48 +3213,48 @@ bool SVGLoader::GetGeometryOrGroup(ID2D1Factory* factoryPtr, std::vector<ID2D1Ge
 
 MATRIX3X2 SVGLoader::ReadTransform(tstring& sTransformInfoRef)
 {
-    int argCount;
+	int argCount;
 	MATRIX3X2 matrix;
 
-	if(sTransformInfoRef != _T(""))
+	if (sTransformInfoRef != _T(""))
 	{
-		switch( sTransformInfoRef.c_str()[0] )
+		switch (sTransformInfoRef.c_str()[0])
 		{
 		case _T('m'):
 			_stscanf_s(sTransformInfoRef.c_str(), _T("matrix(%lf,%lf,%lf,%lf,%lf,%lf)"), &matrix.dirX.x, &matrix.dirX.y, &matrix.dirY.x, &matrix.dirY.y, &matrix.orig.x, &matrix.orig.y);
 			break;
 
 		case _T('t'):
-            argCount = _stscanf_s(sTransformInfoRef.c_str(), _T("translate(%lf,%lf)"), &matrix.orig.x, &matrix.orig.y);
+			argCount = _stscanf_s(sTransformInfoRef.c_str(), _T("translate(%lf,%lf)"), &matrix.orig.x, &matrix.orig.y);
 			break;
 
-        case _T('s'):
-            argCount = _stscanf_s(sTransformInfoRef.c_str(), _T("scale(%lf,%lf)"), &matrix.dirX.x, &matrix.dirY.y);
+		case _T('s'):
+			argCount = _stscanf_s(sTransformInfoRef.c_str(), _T("scale(%lf,%lf)"), &matrix.dirX.x, &matrix.dirY.y);
 
-            if( argCount == 1 )
-            {
-                matrix.dirY.y = matrix.dirX.x;
-            }
-            break;
+			if (argCount == 1)
+			{
+				matrix.dirY.y = matrix.dirX.x;
+			}
+			break;
 
-        case _T('r'):
-            {
-                double angle;
-                DOUBLE2 center;
-                argCount = _stscanf_s(sTransformInfoRef.c_str(), _T("rotate(%lf,%lf,%lf)"), &angle, &center.x, &center.y);
+		case _T('r'):
+		{
+			double angle;
+			DOUBLE2 center;
+			argCount = _stscanf_s(sTransformInfoRef.c_str(), _T("rotate(%lf,%lf,%lf)"), &angle, &center.x, &center.y);
 
-                switch( argCount )
-                {
-                case 1:
-                    matrix = MATRIX3X2::CreateRotationMatrix(angle * M_PI / 180);
-                    break;
-                case 3:
-                    matrix = MATRIX3X2::CreateTranslationMatrix(-center) * MATRIX3X2::CreateRotationMatrix(angle * M_PI / 180) * MATRIX3X2::CreateTranslationMatrix(center);
-                    break;
-                }
-            }
-            break;
-		
+			switch (argCount)
+			{
+			case 1:
+				matrix = MATRIX3X2::CreateRotationMatrix(angle * M_PI / 180);
+				break;
+			case 3:
+				matrix = MATRIX3X2::CreateTranslationMatrix(-center) * MATRIX3X2::CreateRotationMatrix(angle * M_PI / 180) * MATRIX3X2::CreateTranslationMatrix(center);
+				break;
+			}
+		}
+		break;
+
 		default:
 			GameEngine::GetSingleton()->MessageBox("unsupported transform attribute");
 			break;
@@ -3266,11 +3266,11 @@ MATRIX3X2 SVGLoader::ReadTransform(tstring& sTransformInfoRef)
 
 bool SVGLoader::ReadSvgPath(ID2D1Factory* factoryPtr, tstring& sPathInfoRef, ID2D1PathGeometry*& pathGeometryPtrRef)
 {
-	HRESULT hr ;
+	HRESULT hr;
 
 	// Create path geometry
 	hr = factoryPtr->CreatePathGeometry(&pathGeometryPtrRef);
-	if( FAILED(hr) )
+	if (FAILED(hr))
 	{
 		pathGeometryPtrRef->Release();
 		GameEngine::GetSingleton()->MessageBox("Failed to create path geometry");
@@ -3280,7 +3280,7 @@ bool SVGLoader::ReadSvgPath(ID2D1Factory* factoryPtr, tstring& sPathInfoRef, ID2
 	// Write to the path geometry using the geometry sink.
 	ID2D1GeometrySink* geometrySinkPtr = 0;
 	hr = pathGeometryPtrRef->Open(&geometrySinkPtr);
-	if( FAILED(hr) )
+	if (FAILED(hr))
 	{
 		geometrySinkPtr->Release();
 		pathGeometryPtrRef->Release();
@@ -3305,15 +3305,15 @@ bool SVGLoader::ReadSvgPath(ID2D1Factory* factoryPtr, tstring& sPathInfoRef, ID2
 
 	bool isOpen = true;
 
-	while(true)
+	while (true)
 	{
 		TCHAR c;
 		ss >> c;
 
-		if( ss.eof() )
+		if (ss.eof())
 			break;
 
-		if(_tcschr(svgCmds.c_str(), c) != 0 )
+		if (_tcschr(svgCmds.c_str(), c) != 0)
 		{
 			cmd = c;
 		}
@@ -3322,7 +3322,7 @@ bool SVGLoader::ReadSvgPath(ID2D1Factory* factoryPtr, tstring& sPathInfoRef, ID2
 			ss.putback(c);
 		}
 
-		switch( cmd )
+		switch (cmd)
 		{
 		case _T('Z'):
 		case _T('z'):
@@ -3333,7 +3333,7 @@ bool SVGLoader::ReadSvgPath(ID2D1Factory* factoryPtr, tstring& sPathInfoRef, ID2
 
 		case _T('M'):
 		case _T('m'):
-			if( isOpen )
+			if (isOpen)
 			{
 				cursor = FirstSvgPoint(ss, cursor, cmd, isOpen, true);
 				startPoint = cursor;//record startpoint, cursor is set back to startPoint when path closes
@@ -3345,13 +3345,13 @@ bool SVGLoader::ReadSvgPath(ID2D1Factory* factoryPtr, tstring& sPathInfoRef, ID2
 			// Fallthrough when isOpen
 		case _T('L'):
 		case _T('l'):
-			cbs.point2 = NextSvgPoint(ss, cursor, cmd, isOpen, true).ToPoint2F() ;
+			cbs.point2 = NextSvgPoint(ss, cursor, cmd, isOpen, true).ToPoint2F();
 			geometrySinkPtr->AddLine(cbs.point2);
 			break;
 
 		case _T('h'):
 		case _T('H'):
-			cbs.point2 = NextSvgCoordX(ss, cursor, cmd, isOpen).ToPoint2F() ;
+			cbs.point2 = NextSvgCoordX(ss, cursor, cmd, isOpen).ToPoint2F();
 			geometrySinkPtr->AddLine(cbs.point2);
 			break;
 
@@ -3397,24 +3397,24 @@ bool SVGLoader::ReadSvgPath(ID2D1Factory* factoryPtr, tstring& sPathInfoRef, ID2
 
 		case _T('A'):
 		case _T('a'):
-			// (rx ry x-axis-rotation large-arc-flag sweep-flag x y)+	
-			// Draws an elliptical arc from the current point to (x, y). 
-			// The size and orientation of the ellipse are defined by two radii (rx, ry) and an x-axis-rotation, 
-			// which indicates how the ellipse as a whole is rotated relative to the current coordinate system. 
-			// The center (cx, cy) of the ellipse is calculated automatically to satisfy the constraints imposed by the other parameters. 
+			// (rx ry x-axis-rotation large-arc-flag sweep-flag x y)+
+			// Draws an elliptical arc from the current point to (x, y).
+			// The size and orientation of the ellipse are defined by two radii (rx, ry) and an x-axis-rotation,
+			// which indicates how the ellipse as a whole is rotated relative to the current coordinate system.
+			// The center (cx, cy) of the ellipse is calculated automatically to satisfy the constraints imposed by the other parameters.
 			// large-arc-flag and sweep-flag contribute to the automatic calculations and help determine how the arc is drawn.
-			{
-				OutputDebugString("WARNING: SVG Arcs not supported yet\n");
-				D2D1_ARC_SEGMENT arc;
-				arc.size.width = (float) ReadSvgValue(ss, true);
-				arc.size.height = (float) ReadSvgValue(ss, true);
-				arc.rotationAngle = (float) ReadSvgValue(ss, true);
-				arc.arcSize = (D2D1_ARC_SIZE) (int) ReadSvgValue(ss, true);
-				arc.sweepDirection = (D2D1_SWEEP_DIRECTION) (int) ReadSvgValue(ss, true);
-				cbs.point2 = arc.point = NextSvgPoint(ss, cursor, cmd, isOpen, true).ToPoint2F();
-				geometrySinkPtr->AddArc(arc);
-			}
-			break;
+		{
+			OutputDebugString("WARNING: SVG Arcs not supported yet\n");
+			D2D1_ARC_SEGMENT arc;
+			arc.size.width = (float)ReadSvgValue(ss, true);
+			arc.size.height = (float)ReadSvgValue(ss, true);
+			arc.rotationAngle = (float)ReadSvgValue(ss, true);
+			arc.arcSize = (D2D1_ARC_SIZE)(int)ReadSvgValue(ss, true);
+			arc.sweepDirection = (D2D1_SWEEP_DIRECTION)(int)ReadSvgValue(ss, true);
+			cbs.point2 = arc.point = NextSvgPoint(ss, cursor, cmd, isOpen, true).ToPoint2F();
+			geometrySinkPtr->AddArc(arc);
+		}
+		break;
 
 		default:
 			GameEngine::GetSingleton()->MessageBox("%c is not a supported SVG command");
@@ -3422,7 +3422,7 @@ bool SVGLoader::ReadSvgPath(ID2D1Factory* factoryPtr, tstring& sPathInfoRef, ID2
 		}
 	}
 
-	if( !isOpen )
+	if (!isOpen)
 	{
 		geometrySinkPtr->EndFigure(D2D1_FIGURE_END_CLOSED);
 	}
@@ -3436,16 +3436,16 @@ bool SVGLoader::ReadSvgPath(ID2D1Factory* factoryPtr, tstring& sPathInfoRef, ID2
 // Replace all whitespace by space.
 TCHAR SVGLoader::WhiteSpaceMapper(TCHAR c)
 {
-    switch( c )
-    {
-    case _T('\n'):
-    case _T('\r'):
-    case _T('\t'):
-        return _T(' ');
+	switch (c)
+	{
+	case _T('\n'):
+	case _T('\r'):
+	case _T('\t'):
+		return _T(' ');
 
-    default:
-        return c;
-    }
+	default:
+		return c;
+	}
 }
 
 // Skips any optional commas in the stream
@@ -3454,45 +3454,45 @@ TCHAR SVGLoader::WhiteSpaceMapper(TCHAR c)
 // TODO: Test cases!
 void SVGLoader::SkipSvgComma(tstringstream& ssRef, bool isRequired)
 {
-    while(true)
-    {
-        TCHAR c = ssRef.get();
+	while (true)
+	{
+		TCHAR c = ssRef.get();
 
-        if( ssRef.eof() )
+		if (ssRef.eof())
 		{
-			if( isRequired ) GameEngine::GetSingleton()->MessageBox("expected comma or whitespace");
+			if (isRequired) GameEngine::GetSingleton()->MessageBox("expected comma or whitespace");
 			break;
 		}
 
-        if( c==_T(',') )
-            return;
+		if (c == _T(','))
+			return;
 
-        if( !isspace(c) )
-        {
-            ssRef.unget();
-            return;
-        }
-    } 
+		if (!isspace(c))
+		{
+			ssRef.unget();
+			return;
+		}
+	}
 }
 
- double SVGLoader::ReadSvgValue(tstringstream& ssRef, double defaultValue)
+double SVGLoader::ReadSvgValue(tstringstream& ssRef, double defaultValue)
 {
-    double s;
-    ssRef >> s;
+	double s;
+	ssRef >> s;
 
-    if( ssRef.eof() )
-    {
-        s = defaultValue;
-    }
-    else
-    {
-        SkipSvgComma(ssRef, false);
-    }
+	if (ssRef.eof())
+	{
+		s = defaultValue;
+	}
+	else
+	{
+		SkipSvgComma(ssRef, false);
+	}
 
-    return s;
+	return s;
 }
 
- double SVGLoader::ReadSvgValue(tstringstream& ssRef, bool separatorRequired)
+double SVGLoader::ReadSvgValue(tstringstream& ssRef, bool separatorRequired)
 {
 	double s;
 	ssRef >> s;
@@ -3501,104 +3501,104 @@ void SVGLoader::SkipSvgComma(tstringstream& ssRef, bool isRequired)
 }
 
 // Reads a single point
- DOUBLE2 SVGLoader::ReadSvgPoint(tstringstream& ssRef)
+DOUBLE2 SVGLoader::ReadSvgPoint(tstringstream& ssRef)
 {
-    DOUBLE2 p;
+	DOUBLE2 p;
 	p.x = ReadSvgValue(ssRef, true);
 	p.y = ReadSvgValue(ssRef, false);
-    return p;
+	return p;
 }
 
 DOUBLE2 SVGLoader::FirstSvgPoint(tstringstream& ssRef, DOUBLE2& cursor, TCHAR cmd, bool isOpen, bool advance)
 {
-    if( !isOpen ) GameEngine::GetSingleton()->MessageBox("expected 'Z' or 'z' command");
+	if (!isOpen) GameEngine::GetSingleton()->MessageBox("expected 'Z' or 'z' command");
 
-    DOUBLE2 p = ReadSvgPoint(ssRef);
+	DOUBLE2 p = ReadSvgPoint(ssRef);
 
-    if( islower(cmd) )
-    {
-        // Relative point
-        p = cursor + p;
-    }
+	if (islower(cmd))
+	{
+		// Relative point
+		p = cursor + p;
+	}
 
-    if( advance )
-    {
-        cursor = p;
-    }
+	if (advance)
+	{
+		cursor = p;
+	}
 
-    return p;
+	return p;
 }
-// Read the next point, 
+// Read the next point,
 // taking into account relative and absolute positioning.
 // Advances the cursor if requested.
 // Throws an exception if the figure is not open
- DOUBLE2 SVGLoader::NextSvgPoint(tstringstream& ssRef, DOUBLE2& cursor, TCHAR cmd, bool isOpen, bool advance)
+DOUBLE2 SVGLoader::NextSvgPoint(tstringstream& ssRef, DOUBLE2& cursor, TCHAR cmd, bool isOpen, bool advance)
 {
-    if( isOpen ) GameEngine::GetSingleton()->MessageBox("expected 'M' or 'm' command");
+	if (isOpen) GameEngine::GetSingleton()->MessageBox("expected 'M' or 'm' command");
 
-    DOUBLE2 p = ReadSvgPoint(ssRef);
+	DOUBLE2 p = ReadSvgPoint(ssRef);
 
-    if( islower(cmd) )
-    {
-        // Relative point
-        p = cursor + (p-DOUBLE2());
-    }
+	if (islower(cmd))
+	{
+		// Relative point
+		p = cursor + (p - DOUBLE2());
+	}
 
-    if( advance )
-    {
-        cursor = p;
-    }
+	if (advance)
+	{
+		cursor = p;
+	}
 
-    return p;
+	return p;
 }
 
-// Reads next point, given only the new x coordinate 
- DOUBLE2 SVGLoader::NextSvgCoordX(tstringstream& ssRef, DOUBLE2& cursor, TCHAR cmd, bool isOpen)
+// Reads next point, given only the new x coordinate
+DOUBLE2 SVGLoader::NextSvgCoordX(tstringstream& ssRef, DOUBLE2& cursor, TCHAR cmd, bool isOpen)
 {
-    if( isOpen )
-        GameEngine::GetSingleton()->MessageBox("expected 'M' or 'm' command");
+	if (isOpen)
+		GameEngine::GetSingleton()->MessageBox("expected 'M' or 'm' command");
 
-    double c;
-    ssRef >> c;
+	double c;
+	ssRef >> c;
 
-    if( islower(cmd) )
-    {
-        // Relative point
-        cursor += DOUBLE2(c, 0);
-    }
-    else
-    {
-        cursor.x = c;
-    }
+	if (islower(cmd))
+	{
+		// Relative point
+		cursor += DOUBLE2(c, 0);
+	}
+	else
+	{
+		cursor.x = c;
+	}
 
-    return cursor;
+	return cursor;
 }
 
-// Reads next point, given only the new y coordinate 
- DOUBLE2 SVGLoader::NextSvgCoordY(tstringstream& ssRef, DOUBLE2& cursor, TCHAR cmd, bool isOpen)
+// Reads next point, given only the new y coordinate
+DOUBLE2 SVGLoader::NextSvgCoordY(tstringstream& ssRef, DOUBLE2& cursor, TCHAR cmd, bool isOpen)
 {
-    if( isOpen )
-        GameEngine::GetSingleton()->MessageBox("expected 'M' or 'm' command");
+	if (isOpen)
+		GameEngine::GetSingleton()->MessageBox("expected 'M' or 'm' command");
 
-    double c;
-    ssRef >> c;
+	double c;
+	ssRef >> c;
 
-    if( islower(cmd) )
-    {
-        // Relative point
-        cursor += DOUBLE2(0,c);
-    }
-    else
-    {
-        cursor.y = c;
-    }
+	if (islower(cmd))
+	{
+		// Relative point
+		cursor += DOUBLE2(0, c);
+	}
+	else
+	{
+		cursor.y = c;
+	}
 
-    return cursor;
+	return cursor;
 }
 
 bool sortHitOnTime(HIT hit1, HIT hit2)
 {
-    return hit1.time < hit2.time;
+	return hit1.time < hit2.time;
 }
 
 
@@ -3615,18 +3615,18 @@ bool IntersectLines(DOUBLE2 p1, DOUBLE2 p2, DOUBLE2 q1, DOUBLE2 q2, double& outL
 {
 	bool hit = false;
 
-	DOUBLE2 p1p2 = p2-p1;
-	DOUBLE2 q1q2 = q2-q1;
+	DOUBLE2 p1p2 = p2 - p1;
+	DOUBLE2 q1q2 = q2 - q1;
 
 	double denom = p1p2.Determinant(q1q2);
 
 	// Don't divide by zero
-	if( denom < -epsilon || 
-		denom > +epsilon )
+	if (denom < -epsilon ||
+		denom > +epsilon)
 	{
 		hit = true;
 
-		DOUBLE2 p1q1 = q1-p1;
+		DOUBLE2 p1q1 = q1 - p1;
 
 		double nomin1 = p1q1.Determinant(q1q2);
 		double nomin2 = p1q1.Determinant(p1p2);
@@ -3635,20 +3635,20 @@ bool IntersectLines(DOUBLE2 p1, DOUBLE2 p2, DOUBLE2 q1, DOUBLE2 q2, double& outL
 	}
 
 	return hit;
-}	
+}
 
 bool CUBIC::IntersectLineSegments(DOUBLE2 p1, DOUBLE2 p2, DOUBLE2 q1, DOUBLE2 q2, double& outLambda1, double& outLambda2, double epsilon)
 {
-	bool hit = IntersectLines(p1,p2,q1,q2,outLambda1, outLambda2, epsilon);
+	bool hit = IntersectLines(p1, p2, q1, q2, outLambda1, outLambda2, epsilon);
 
-	if( hit )
+	if (hit)
 	{
 		hit = outLambda1 >= 0 && outLambda1 <= 1 && outLambda2 >= 0 && outLambda2 <= 1;
 	}
 
 	return hit;
 }
-	
+
 void CUBIC::Split(CUBIC& c0, CUBIC& c1)
 {
 	DOUBLE2 p01 = Lerp(p0, p1, 0.5);
@@ -3674,27 +3674,27 @@ void CUBIC::FitQuads(double squareTolerance, std::vector<DOUBLE2>& qs, int recur
 	double time1;
 	double time2;
 
-	if( !split )
+	if (!split)
 	{
 		// If the lines are parallel, we must split
 		split = !IntersectLines(p0, p1, p2, p3, time1, time2);;
 	}
 
-	if( !split )
+	if (!split)
 	{
 		// Compute intersection point of p0..p1 and p2..p3
 		// This is the control point of the quadratic curve.
-		DOUBLE2 q = p0+time1*(p1-p0);
+		DOUBLE2 q = p0 + time1*(p1 - p0);
 
 		// Measure distance between midpoint on cubic curve [p0,p1,p2,p3] and quadratic curve [p0,q,p3]
-		double dx = (4*q.x+p3.x-3*p2.x-3*p1.x+p0.x)/8;
-		double dy = (4*q.y+p3.y-3*p2.y-3*p1.y+p0.y)/8;
-		double dd = dx*dx+dy*dy;
+		double dx = (4 * q.x + p3.x - 3 * p2.x - 3 * p1.x + p0.x) / 8;
+		double dy = (4 * q.y + p3.y - 3 * p2.y - 3 * p1.y + p0.y) / 8;
+		double dd = dx*dx + dy*dy;
 
 		// split curve if the quadratic isn't close enough
 		split = dd > squareTolerance;
 
-		if( !split )
+		if (!split)
 		{
 			// no need to split, stop recursion
 			qs.push_back(p0);
@@ -3703,9 +3703,9 @@ void CUBIC::FitQuads(double squareTolerance, std::vector<DOUBLE2>& qs, int recur
 		}
 	}
 
-	if( split )
+	if (split)
 	{
-		if( recurse == 0 )
+		if (recurse == 0)
 		{
 			qs.push_back(p0);
 			qs.push_back(Lerp(p1, p2, 0.5));
@@ -3715,8 +3715,8 @@ void CUBIC::FitQuads(double squareTolerance, std::vector<DOUBLE2>& qs, int recur
 		{
 			CUBIC c0, c1;
 			Split(c0, c1);
-			c0.FitQuads(squareTolerance, qs, recurse-1, false);
-			c1.FitQuads(squareTolerance, qs, recurse-1, false);
+			c0.FitQuads(squareTolerance, qs, recurse - 1, false);
+			c1.FitQuads(squareTolerance, qs, recurse - 1, false);
 		}
 	}
 }
@@ -3726,7 +3726,7 @@ void CUBIC::FitQuads(double squareTolerance, std::vector<DOUBLE2>& qs, int recur
 // SimplifiedGeometrySink methods
 //-----------------------------------------------------------------
 SimplifiedGeometrySink::SimplifiedGeometrySink(ID2D1GeometrySink* baseSink, double flatteningTolerance, std::vector<DOUBLE2>& lines, std::vector<DOUBLE2>& quads) :
-							m_FlatteningTolerance(flatteningTolerance), m_BaseSink(baseSink), m_Lines(lines), m_Quads(quads)
+	m_FlatteningTolerance(flatteningTolerance), m_BaseSink(baseSink), m_Lines(lines), m_Quads(quads)
 {}
 
 SimplifiedGeometrySink::~SimplifiedGeometrySink()
@@ -3734,59 +3734,59 @@ SimplifiedGeometrySink::~SimplifiedGeometrySink()
 
 HRESULT SimplifiedGeometrySink::QueryInterface(REFIID riid, void** ppvObject)
 {
-    return E_NOTIMPL;
+	return E_NOTIMPL;
 }
 
 ULONG SimplifiedGeometrySink::AddRef()
 {
-    return 0;
+	return 0;
 }
 
 ULONG SimplifiedGeometrySink::Release()
 {
-    return 0;
+	return 0;
 }
 
-void SimplifiedGeometrySink::SetFillMode(D2D1_FILL_MODE fillMode) 
+void SimplifiedGeometrySink::SetFillMode(D2D1_FILL_MODE fillMode)
 {
-    if( m_BaseSink )
-        m_BaseSink->SetFillMode(fillMode);
+	if (m_BaseSink)
+		m_BaseSink->SetFillMode(fillMode);
 }
 
 void SimplifiedGeometrySink::SetSegmentFlags(D2D1_PATH_SEGMENT vertexFlags)
 {
-    if( m_BaseSink )
-        m_BaseSink->SetSegmentFlags(vertexFlags);
+	if (m_BaseSink)
+		m_BaseSink->SetSegmentFlags(vertexFlags);
 }
 
-void SimplifiedGeometrySink::BeginFigure(D2D1_POINT_2F startPoint, D2D1_FIGURE_BEGIN figureBegin) 
+void SimplifiedGeometrySink::BeginFigure(D2D1_POINT_2F startPoint, D2D1_FIGURE_BEGIN figureBegin)
 {
 	m_StartPoint = startPoint;	//Bart: remember, may be needed when endfigure is drawn
-    m_Cursor = startPoint;
+	m_Cursor = startPoint;
 
-    if( m_BaseSink )
-        m_BaseSink->BeginFigure(startPoint, figureBegin);
-}
-    
-void SimplifiedGeometrySink::AddLines(CONST D2D1_POINT_2F *points, UINT pointsCount) 
-{
-    if( m_BaseSink )
-        m_BaseSink->AddLines(points, pointsCount);
-
-    for(UINT count = 0; count < pointsCount; ++count )
-    {
-        m_Lines.push_back(m_Cursor);
-        m_Lines.push_back(points[count]);
-        m_Cursor = points[count];
-    }
+	if (m_BaseSink)
+		m_BaseSink->BeginFigure(startPoint, figureBegin);
 }
 
-void SimplifiedGeometrySink::AddBeziers(CONST D2D1_BEZIER_SEGMENT *beziers, UINT beziersCount) 
+void SimplifiedGeometrySink::AddLines(CONST D2D1_POINT_2F *points, UINT pointsCount)
 {
-    size_t quadIndex0 = m_Quads.size();
+	if (m_BaseSink)
+		m_BaseSink->AddLines(points, pointsCount);
 
-    for(UINT count = 0; count < beziersCount; ++count)
-    {
+	for (UINT count = 0; count < pointsCount; ++count)
+	{
+		m_Lines.push_back(m_Cursor);
+		m_Lines.push_back(points[count]);
+		m_Cursor = points[count];
+	}
+}
+
+void SimplifiedGeometrySink::AddBeziers(CONST D2D1_BEZIER_SEGMENT *beziers, UINT beziersCount)
+{
+	size_t quadIndex0 = m_Quads.size();
+
+	for (UINT count = 0; count < beziersCount; ++count)
+	{
 		CUBIC c;
 		c.p0 = m_Cursor;
 		c.p1 = beziers[count].point1;
@@ -3794,28 +3794,28 @@ void SimplifiedGeometrySink::AddBeziers(CONST D2D1_BEZIER_SEGMENT *beziers, UINT
 		c.p3 = beziers[count].point3;
 		m_Cursor = beziers[count].point3;
 		c.FitQuads(m_FlatteningTolerance*m_FlatteningTolerance, m_Quads);
-    }
+	}
 
-    size_t quadIndex1 = m_Quads.size();
+	size_t quadIndex1 = m_Quads.size();
 
-    if( m_BaseSink )
-    {
-        for(UINT count = quadIndex0; count < quadIndex1; count += 3)
-        {
-            D2D1_QUADRATIC_BEZIER_SEGMENT s;
-            s.point1 = m_Quads[count + 1].ToPoint2F();
-            s.point2 = m_Quads[count + 2].ToPoint2F();
-            m_BaseSink->AddQuadraticBezier(&s);
-        }
-    }
+	if (m_BaseSink)
+	{
+		for (UINT count = quadIndex0; count < quadIndex1; count += 3)
+		{
+			D2D1_QUADRATIC_BEZIER_SEGMENT s;
+			s.point1 = m_Quads[count + 1].ToPoint2F();
+			s.point2 = m_Quads[count + 2].ToPoint2F();
+			m_BaseSink->AddQuadraticBezier(&s);
+		}
+	}
 }
 
-void SimplifiedGeometrySink::EndFigure(D2D1_FIGURE_END figureEnd) 
+void SimplifiedGeometrySink::EndFigure(D2D1_FIGURE_END figureEnd)
 {
-    if( m_BaseSink )
-        m_BaseSink->EndFigure(figureEnd); 
+	if (m_BaseSink)
+		m_BaseSink->EndFigure(figureEnd);
 
-	if(figureEnd == D2D1_FIGURE_END_CLOSED)
+	if (figureEnd == D2D1_FIGURE_END_CLOSED)
 	{
 		m_Lines.push_back(m_Cursor);
 		m_Lines.push_back(m_StartPoint);
@@ -3824,14 +3824,14 @@ void SimplifiedGeometrySink::EndFigure(D2D1_FIGURE_END figureEnd)
 
 HRESULT SimplifiedGeometrySink::Close()
 {
-    HRESULT hr = S_OK;
+	HRESULT hr = S_OK;
 
-    if( m_BaseSink )
-    {
-        hr = m_BaseSink->Close();
-    }
+	if (m_BaseSink)
+	{
+		hr = m_BaseSink->Close();
+	}
 
-    return hr;
+	return hr;
 }
 
 
@@ -3842,10 +3842,10 @@ double HitOutline::DBL_NAN = sqrt(-1.0);
 
 HitOutline::HitOutline(ID2D1Geometry* geometryPtr, ID2D1GeometrySink* targetSink, int maxDegree, double flatteningTolerance)
 {
-    SimplifiedGeometrySink sink(targetSink, flatteningTolerance, m_Lines, m_Quads);
+	SimplifiedGeometrySink sink(targetSink, flatteningTolerance, m_Lines, m_Quads);
 
-    // TODO: Call Outline first?
-    geometryPtr->Simplify(maxDegree >= 2 ? D2D1_GEOMETRY_SIMPLIFICATION_OPTION_CUBICS_AND_LINES : D2D1_GEOMETRY_SIMPLIFICATION_OPTION_LINES, MATRIX3X2().ToMatrix3x2F(), (float) flatteningTolerance, &sink);
+	// TODO: Call Outline first?
+	geometryPtr->Simplify(maxDegree >= 2 ? D2D1_GEOMETRY_SIMPLIFICATION_OPTION_CUBICS_AND_LINES : D2D1_GEOMETRY_SIMPLIFICATION_OPTION_LINES, MATRIX3X2().ToMatrix3x2F(), (float)flatteningTolerance, &sink);
 }
 
 HitOutline::~HitOutline()
@@ -3856,43 +3856,43 @@ int HitOutline::Raycast(DOUBLE2 p, DOUBLE2 v, double maxTime, HIT* hitArr, int h
 	//local data: Bart
 	HIT localHitArr[MAX_HITS];
 
-    int hitCount = 0;
+	int hitCount = 0;
 
-    // TODO: Currently very slow, brute force!
-    int lineVertexCount = m_Lines.size();
+	// TODO: Currently very slow, brute force!
+	int lineVertexCount = m_Lines.size();
 	int quadVertexCount = m_Quads.size();
 
-    double epsilon = 1e-6;
+	double epsilon = 1e-6;
 
 	DOUBLE2 p1 = p;
 	DOUBLE2 p2 = p + v;
-    DOUBLE2 orig(0,0);
+	DOUBLE2 orig(0, 0);
 	double vDv = v.DotProduct(v);
-    DOUBLE2 n = v.Orthogonal();
+	DOUBLE2 n = v.Orthogonal();
 
 	// Line-line intersections.
-	if( lineVertexCount > 0 )
+	if (lineVertexCount > 0)
 	{
 		DOUBLE2* lines = &m_Lines[0];
 
-		for(int count=0; count < lineVertexCount && hitCount < MAX_HITS; count += 2 )
+		for (int count = 0; count < lineVertexCount && hitCount < MAX_HITS; count += 2)
 		{
 			DOUBLE2 q1 = lines[count + 0];
 			DOUBLE2 q2 = lines[count + 1];
 
 			DOUBLE2 ortho = (q2 - q1).Orthogonal();
-			if( (ortho.DotProduct(v) * sense < 0) || sense == 0)
+			if ((ortho.DotProduct(v) * sense < 0) || sense == 0)
 			{
 				double time1, time2;
-				if(IntersectLines(p1, p2, q1, q2, time1, time2))
+				if (IntersectLines(p1, p2, q1, q2, time1, time2))
 				{
-					if( time1 >= 0 && time1 < maxTime && time2 >= 0 && time2 <= 1 )
+					if (time1 >= 0 && time1 < maxTime && time2 >= 0 && time2 <= 1)
 					{
 						HIT hit;
-                        hit.time = time1;
+						hit.time = time1;
 						hit.point = p + time1 * v;
 						hit.normal = ortho.Normalized();
-                        localHitArr[hitCount++] = hit;
+						localHitArr[hitCount++] = hit;
 					}
 				}
 			}
@@ -3900,69 +3900,69 @@ int HitOutline::Raycast(DOUBLE2 p, DOUBLE2 v, double maxTime, HIT* hitArr, int h
 	}
 
 	// Line-quadratic intersections.
-	if( quadVertexCount > 0 )
+	if (quadVertexCount > 0)
 	{
 		DOUBLE2* quads = &m_Quads[0];
-		for(int count = 0; count < quadVertexCount && hitCount < MAX_HITS; count += 3)
+		for (int count = 0; count < quadVertexCount && hitCount < MAX_HITS; count += 3)
 		{
 			DOUBLE2 q0 = quads[count + 0] - p;
 			DOUBLE2 q1 = quads[count + 1] - p;
 			DOUBLE2 q2 = quads[count + 2] - p;
 
-            // Hit only possible if:
-            // (1) not all points are on same side of ray,
-            //     
-            // (2) and some points are in front of ray (currently not checked, handled by abc formula)
+			// Hit only possible if:
+			// (1) not all points are on same side of ray,
+			//
+			// (2) and some points are in front of ray (currently not checked, handled by abc formula)
 
-            double dot_n_q0 = n.DotProduct(q0);
-            double dot_n_q1 = n.DotProduct(q1);
-            double dot_n_q2 = n.DotProduct(q2);
+			double dot_n_q0 = n.DotProduct(q0);
+			double dot_n_q1 = n.DotProduct(q1);
+			double dot_n_q2 = n.DotProduct(q2);
 
-            if( dot_n_q0 <= 0 && dot_n_q1 <= 0 && dot_n_q2 <= 0 )
-                continue;
+			if (dot_n_q0 <= 0 && dot_n_q1 <= 0 && dot_n_q2 <= 0)
+				continue;
 
-            if( dot_n_q0 >= 0 && dot_n_q1 >= 0 && dot_n_q2 >= 0 )
-                continue;
+			if (dot_n_q0 >= 0 && dot_n_q1 >= 0 && dot_n_q2 >= 0)
+				continue;
 
-            double ts[2];
-            double a = 2 * dot_n_q1 - dot_n_q0 - dot_n_q2;
-            double b = 2 * dot_n_q0 - 2 * dot_n_q1;
-            double c = -dot_n_q0;
+			double ts[2];
+			double a = 2 * dot_n_q1 - dot_n_q0 - dot_n_q2;
+			double b = 2 * dot_n_q0 - 2 * dot_n_q1;
+			double c = -dot_n_q0;
 			int n = SolveQuadratic(a, b, c, ts);
 
-			for(int count2 = 0; count2 < n && hitCount < MAX_HITS; ++count2)
+			for (int count2 = 0; count2 < n && hitCount < MAX_HITS; ++count2)
 			{
 				double t = ts[count2];
-				if( t >= 0 && t <= 1 )
+				if (t >= 0 && t <= 1)
 				{
 					DOUBLE2 diff = (2 * (q2 - q1) + 2 * (q0 - q1)) * t + 2 * (q1 - q0);
 					DOUBLE2 ortho = diff.Orthogonal();
-					if( (ortho.DotProduct(v) * sense < 0) || sense == 0)
+					if ((ortho.DotProduct(v) * sense < 0) || sense == 0)
 					{
-						DOUBLE2 h = Lerp( Lerp(q0, q1, t), Lerp(q1, q2, t), t);
+						DOUBLE2 h = Lerp(Lerp(q0, q1, t), Lerp(q1, q2, t), t);
 						double time = h.DotProduct(v) / vDv;
 						//time >= -maxTime
-                        if( time >= 0 && time < maxTime )
-                        {
-						    HIT hit;
-						    hit.point = p+h;
-						    hit.time = time;
-						    hit.normal = ortho.Normalized();
-                            localHitArr[hitCount++] = hit;
-                        }
+						if (time >= 0 && time < maxTime)
+						{
+							HIT hit;
+							hit.point = p + h;
+							hit.time = time;
+							hit.normal = ortho.Normalized();
+							localHitArr[hitCount++] = hit;
+						}
 					}
 				}
 			}
 		}
 	}
 
-    std::sort(localHitArr, localHitArr+hitCount, sortHitOnTime);
+	std::sort(localHitArr, localHitArr + hitCount, sortHitOnTime);
 	//Bart
-	for(int count = 0; count < hitCount && count < hitArrSize; ++count )
+	for (int count = 0; count < hitCount && count < hitArrSize; ++count)
 	{
-		hitArr[count]=localHitArr[count];
+		hitArr[count] = localHitArr[count];
 	}
-    return hitCount;
+	return hitCount;
 }
 
 int HitOutline::SolveQuadratic(double a, double b, double c, double* xArr)
@@ -3971,7 +3971,7 @@ int HitOutline::SolveQuadratic(double a, double b, double c, double* xArr)
 
 	double epsilon = 1e-6;
 
-	if( fabs(a) < epsilon )
+	if (fabs(a) < epsilon)
 	{
 		xArr[0] = xArr[1] = SolveLinear(b, c);
 		numberOfXs = 1;
@@ -3981,13 +3981,13 @@ int HitOutline::SolveQuadratic(double a, double b, double c, double* xArr)
 		// Compute the discriminant d
 		double d = b * b - 4 * a * c;
 
-		if( d < 0 )
+		if (d < 0)
 		{
 			// No real solutions
 			xArr[0] = xArr[1] = DBL_NAN;
 			numberOfXs = 0;
 		}
-		else if( fabs(d) < epsilon )
+		else if (fabs(d) < epsilon)
 		{
 			// One real solution
 			xArr[0] = xArr[1] = -b / (2 * a);
@@ -4005,7 +4005,7 @@ int HitOutline::SolveQuadratic(double a, double b, double c, double* xArr)
 	return numberOfXs;
 }
 
-double HitOutline::SolveLinear(double a, double b) 
+double HitOutline::SolveLinear(double a, double b)
 {
 	return -b / a;
 }
@@ -4030,9 +4030,9 @@ HitRegion::~HitRegion()
 bool HitRegion::CreateFromRect(double x, double y, double width, double height)
 {
 	ID2D1RectangleGeometry* rg = 0;
-	m_HResult = m_D2DFactoryPtr->CreateRectangleGeometry(D2D1::RectF((FLOAT) x, (FLOAT) y, (FLOAT) (x + width), (FLOAT) (y + height)), &rg);
+	m_HResult = m_D2DFactoryPtr->CreateRectangleGeometry(D2D1::RectF((FLOAT)x, (FLOAT)y, (FLOAT)(x + width), (FLOAT)(y + height)), &rg);
 
-	if(SUCCEEDED(m_HResult))
+	if (SUCCEEDED(m_HResult))
 	{
 		//ID2D1EllipseGeometry inherits from interface ID2D1Geometry
 		if (m_GeometryPtr != 0) m_GeometryPtr->Release();
@@ -4040,7 +4040,7 @@ bool HitRegion::CreateFromRect(double x, double y, double width, double height)
 		CreateTransformedGeometry(0, 0);
 		return true;
 	}
-	else 
+	else
 	{
 		GameEngine::GetSingleton()->MessageBox("HitRegion CreateRect Failed");
 		exit(-1);
@@ -4051,8 +4051,8 @@ bool HitRegion::CreateFromRect(double x, double y, double width, double height)
 bool HitRegion::CreateFromEllipse(double centerX, double centerY, double radiusX, double radiusY)
 {
 	ID2D1EllipseGeometry* eg = 0;
-	m_HResult = m_D2DFactoryPtr->CreateEllipseGeometry(D2D1::Ellipse(D2D1::Point2F((FLOAT) centerX, (FLOAT) centerY), (FLOAT) radiusX, (FLOAT) radiusY), &eg);
-	if(SUCCEEDED(m_HResult))
+	m_HResult = m_D2DFactoryPtr->CreateEllipseGeometry(D2D1::Ellipse(D2D1::Point2F((FLOAT)centerX, (FLOAT)centerY), (FLOAT)radiusX, (FLOAT)radiusY), &eg);
+	if (SUCCEEDED(m_HResult))
 	{
 		//ID2D1EllipseGeometry inherits from interface ID2D1Geometry
 		if (m_GeometryPtr != 0) m_GeometryPtr->Release();
@@ -4060,7 +4060,7 @@ bool HitRegion::CreateFromEllipse(double centerX, double centerY, double radiusX
 		CreateTransformedGeometry(0, 0);
 		return true;
 	}
-	else 
+	else
 	{
 		GameEngine::GetSingleton()->MessageBox("HitRegion CreateEllipse Failed");
 		exit(-1);
@@ -4081,10 +4081,10 @@ bool HitRegion::CreateFromPolygon(DOUBLE2* pntArr, int nrPoints, bool close)
 
 		if (SUCCEEDED(hr))
 		{
-			sinkPtr->BeginFigure(D2D1::Point2F((FLOAT) pntArr[0].x, (FLOAT) pntArr[0].y), D2D1_FIGURE_BEGIN_FILLED);
-			for(int count = 1; count < nrPoints; ++count)
+			sinkPtr->BeginFigure(D2D1::Point2F((FLOAT)pntArr[0].x, (FLOAT)pntArr[0].y), D2D1_FIGURE_BEGIN_FILLED);
+			for (int count = 1; count < nrPoints; ++count)
 			{
-				sinkPtr->AddLine(D2D1::Point2F((FLOAT) pntArr[count].x, (FLOAT) pntArr[count].y));
+				sinkPtr->AddLine(D2D1::Point2F((FLOAT)pntArr[count].x, (FLOAT)pntArr[count].y));
 			}
 
 			if (close) sinkPtr->EndFigure(D2D1_FIGURE_END_CLOSED);
@@ -4101,7 +4101,7 @@ bool HitRegion::CreateFromPolygon(DOUBLE2* pntArr, int nrPoints, bool close)
 		CreateTransformedGeometry(0, 0);
 		return true;
 	}
-	else 
+	else
 	{
 		GameEngine::GetSingleton()->MessageBox("HitRegion CreatePolygon Failed");
 		exit(-1);
@@ -4115,7 +4115,7 @@ bool HitRegion::CreateFromFile(String filePath)
 	ID2D1Geometry* geometryPtr;
 	bool result = sVGLoader.LoadGeometryFromSvgFile(filePath, geometryPtr);
 
- 	if (m_GeometryPtr != 0) m_GeometryPtr->Release();
+	if (m_GeometryPtr != 0) m_GeometryPtr->Release();
 	m_GeometryPtr = geometryPtr;
 	CreateTransformedGeometry(0, 0);
 	Simplify();//prepare for raycast
@@ -4142,7 +4142,7 @@ bool HitRegion::HitTest(double x, double y)
 	CheckIfCreated(m_TransformedGeometryPtr);
 
 	BOOL bHit;
-	m_TransformedGeometryPtr->FillContainsPoint(D2D1::Point2F((FLOAT) x, (FLOAT) y), D2D1::Matrix3x2F::Identity(), &bHit);
+	m_TransformedGeometryPtr->FillContainsPoint(D2D1::Point2F((FLOAT)x, (FLOAT)y), D2D1::Matrix3x2F::Identity(), &bHit);
 	if (bHit) return true;
 	else return false;
 }
@@ -4152,10 +4152,10 @@ bool HitRegion::HitTest(DOUBLE2 pt)
 	return HitTest(pt.x, pt.y);
 }
 
-bool HitRegion::Exists() 
+bool HitRegion::Exists()
 {
-	return m_GeometryPtr==0?false:true;
-}	
+	return m_GeometryPtr == 0 ? false : true;
+}
 
 RECT2 HitRegion::CollisionTest(HitRegion* regPtr)
 {
@@ -4199,7 +4199,7 @@ RECT2 HitRegion::CollisionTest(HitRegion* regPtr)
 	{
 		hr = pPathGeometryIntersect->GetBounds(D2D1::IdentityMatrix(), &bounds);
 		// If the bounds are empty, this will be a rect where bounds.left > bounds.right.
-		if(bounds.left > bounds.right) bounds = D2D1::RectF();
+		if (bounds.left > bounds.right) bounds = D2D1::RectF();
 	}
 	else
 	{
@@ -4221,11 +4221,11 @@ RECT2 HitRegion::GetBounds()
 {
 	HRESULT hr;
 	CheckIfCreated(m_TransformedGeometryPtr);
-	D2D1_RECT_F bounds=D2D1::RectF();
+	D2D1_RECT_F bounds = D2D1::RectF();
 
 	hr = m_TransformedGeometryPtr->GetBounds(D2D1::IdentityMatrix(), &bounds);
 	// If the bounds are empty, this will be a rect where bounds.left > bounds.right.
-	if(bounds.left > bounds.right) bounds = D2D1::RectF();
+	if (bounds.left > bounds.right) bounds = D2D1::RectF();
 
 	RECT2 rect;
 	rect.left = bounds.left;
@@ -4237,28 +4237,28 @@ RECT2 HitRegion::GetBounds()
 }
 int HitRegion::Raycast(DOUBLE2 startPoint, DOUBLE2 vector, HIT* hitArr, int hitArrSize, int sense)
 {
-    if( m_HitOutlinePtr == nullptr )
-    {
-        GameEngine::GetSingleton()->MessageBox("You must call Simplify before Raycast");
-    }	
+	if (m_HitOutlinePtr == nullptr)
+	{
+		GameEngine::GetSingleton()->MessageBox("You must call Simplify before Raycast");
+	}
 	//Transform point and vector to object space
 	DOUBLE2 localStartPoint = m_MatTransform.Inverse().TransformPoint(startPoint);
 	DOUBLE2 localVector = m_MatTransform.Inverse().TransformVector(vector);
 	//pass the Raycast to the HitOutline
-    int numHits = m_HitOutlinePtr->Raycast(localStartPoint, localVector, 1, hitArr, hitArrSize, sense);
+	int numHits = m_HitOutlinePtr->Raycast(localStartPoint, localVector, 1, hitArr, hitArrSize, sense);
 	//transform the results to world space
-    for( int i=0; i<numHits; ++i )
-    {
-        hitArr[i].point = m_MatTransform.TransformPoint(hitArr[i].point);
-        hitArr[i].normal = m_MatTransform.TransformVector(hitArr[i].normal);
-    }
+	for (int i = 0; i < numHits; ++i)
+	{
+		hitArr[i].point = m_MatTransform.TransformPoint(hitArr[i].point);
+		hitArr[i].normal = m_MatTransform.TransformVector(hitArr[i].normal);
+	}
 	return numHits;
 }
 void HitRegion::SetPos(double x, double y)
 {
 	CheckIfCreated(m_GeometryPtr);
 
-	D2D_MATRIX_3X2_F matTransform = D2D1::Matrix3x2F::Translation((FLOAT) x, (FLOAT) y);
+	D2D_MATRIX_3X2_F matTransform = D2D1::Matrix3x2F::Translation((FLOAT)x, (FLOAT)y);
 	if (m_TransformedGeometryPtr != 0) m_TransformedGeometryPtr->Release();
 	m_D2DFactoryPtr->CreateTransformedGeometry(m_GeometryPtr, &matTransform, &m_TransformedGeometryPtr);
 }
@@ -4270,18 +4270,18 @@ void HitRegion::SetPos(DOUBLE2 pt)
 
 void HitRegion::Move(double dx, double dy)
 {
-	MATRIX3X2 matTranslate = MATRIX3X2::CreateTranslationMatrix((FLOAT) dx, (FLOAT) dy);
+	MATRIX3X2 matTranslate = MATRIX3X2::CreateTranslationMatrix((FLOAT)dx, (FLOAT)dy);
 	SetTransformMatrix(m_MatTransform * matTranslate);
-}    
-
-ID2D1TransformedGeometry* HitRegion::GetTransformedGeometry() 
-{ 
-	return m_TransformedGeometryPtr; 
 }
 
-ID2D1Geometry* HitRegion::GetGeometry() 
-{ 
-	return m_GeometryPtr; 
+ID2D1TransformedGeometry* HitRegion::GetTransformedGeometry()
+{
+	return m_TransformedGeometryPtr;
+}
+
+ID2D1Geometry* HitRegion::GetGeometry()
+{
+	return m_GeometryPtr;
 }
 
 void HitRegion::CheckIfCreated(ID2D1Geometry* collisionMeshPtr)
@@ -4301,9 +4301,9 @@ void HitRegion::SetTransformMatrix(MATRIX3X2 matTrans)
 	m_D2DFactoryPtr->CreateTransformedGeometry(m_GeometryPtr, &d2dTransform, &m_TransformedGeometryPtr);
 }
 
-MATRIX3X2 HitRegion::GetTransformMatrix() 
-{ 
-	return m_MatTransform; 
+MATRIX3X2 HitRegion::GetTransformMatrix()
+{
+	return m_MatTransform;
 }
 
 HitRegion* HitRegion::ExcludeMesh(HitRegion* excludingMeshPtr)
@@ -4329,10 +4329,10 @@ HitRegion* HitRegion::XORMesh(HitRegion* meshPtr)
 HitRegion* HitRegion::Combine(HitRegion* meshPtr, CombineMode mode)
 {
 	//todo: do not use the transformed geometries
-	HRESULT hr=0;
+	HRESULT hr = 0;
 
 	CheckIfCreated(meshPtr->GetTransformedGeometry());
-	CheckIfCreated(m_GeometryPtr); 
+	CheckIfCreated(m_GeometryPtr);
 
 	D2D1_COMBINE_MODE combineMode = D2D1_COMBINE_MODE_EXCLUDE;
 	if (mode == Union) combineMode = D2D1_COMBINE_MODE_UNION;
@@ -4367,7 +4367,7 @@ HitRegion* HitRegion::Combine(HitRegion* meshPtr, CombineMode mode)
 	{
 		HitRegion* hitRegionPtr = new HitRegion();
 		hitRegionPtr->m_GeometryPtr = pPathGeometryIntersect;
-		hitRegionPtr->CreateTransformedGeometry(0,0);
+		hitRegionPtr->CreateTransformedGeometry(0, 0);
 		return hitRegionPtr;
 	}
 	else
@@ -4385,33 +4385,33 @@ void HitRegion::CreateTransformedGeometry(double posX, double posY)
 
 void HitRegion::Simplify(int maxDegree, double flatteningTolerance)
 {
-    HitOutline* newHitOutlinePtr;
-    ID2D1GeometrySink *pSink = NULL;
-    ID2D1PathGeometry * pathGeometryPtr;
-    HRESULT hr = GameEngine::GetSingleton()->GetD2DFactory()->CreatePathGeometry(&pathGeometryPtr);
+	HitOutline* newHitOutlinePtr;
+	ID2D1GeometrySink *pSink = NULL;
+	ID2D1PathGeometry * pathGeometryPtr;
+	HRESULT hr = GameEngine::GetSingleton()->GetD2DFactory()->CreatePathGeometry(&pathGeometryPtr);
 
-    if (SUCCEEDED(hr))
-    {
-        // Write to the path geometry using the geometry sink.
-        hr = pathGeometryPtr->Open(&pSink);
+	if (SUCCEEDED(hr))
+	{
+		// Write to the path geometry using the geometry sink.
+		hr = pathGeometryPtr->Open(&pSink);
 
-        if (SUCCEEDED(hr))
-        {
-            newHitOutlinePtr = new HitOutline(m_GeometryPtr, pSink, maxDegree, flatteningTolerance);
-            hr = pSink->Close();
-        }
+		if (SUCCEEDED(hr))
+		{
+			newHitOutlinePtr = new HitOutline(m_GeometryPtr, pSink, maxDegree, flatteningTolerance);
+			hr = pSink->Close();
+		}
 		pSink->Release();
-    }
-	if( FAILED(hr) )
-    {
+	}
+	if (FAILED(hr))
+	{
 		GameEngine::GetSingleton()->MessageBox("Geometry::Simplify failed");
-    }
-    m_GeometryPtr->Release();
-    m_GeometryPtr = pathGeometryPtr;
+	}
+	m_GeometryPtr->Release();
+	m_GeometryPtr = pathGeometryPtr;
 
-    SetTransformMatrix(m_MatTransform);
-    delete m_HitOutlinePtr;
-    m_HitOutlinePtr = newHitOutlinePtr;
+	SetTransformMatrix(m_MatTransform);
+	delete m_HitOutlinePtr;
+	m_HitOutlinePtr = newHitOutlinePtr;
 }
 
 //-----------------------------------------------------------------
@@ -4423,12 +4423,12 @@ RECT2::RECT2() : left(0), top(0), right(0), bottom(0)
 RECT2::RECT2(double leftVal, double topVal, double rightVal, double bottomVal) : left(leftVal), top(topVal), right(rightVal), bottom(bottomVal)
 {}
 
-RECT2 RECT2::operator+(DOUBLE2 other){
+RECT2 RECT2::operator+(DOUBLE2 other) {
 	RECT2 tmpRect;
-	tmpRect.left  = left  +other.x;
-	tmpRect.top   = top   +other.y;
-	tmpRect.right = right +other.x;
-	tmpRect.bottom= bottom+other.y;
+	tmpRect.left = left + other.x;
+	tmpRect.top = top + other.y;
+	tmpRect.right = right + other.x;
+	tmpRect.bottom = bottom + other.y;
 	return tmpRect;
 }
 
@@ -4437,10 +4437,10 @@ RECT2 RECT2::operator+(DOUBLE2 other){
 //-----------------------------------------------------------------
 // DOUBLE2 Constructors, friend operators, operators, general methods
 //-----------------------------------------------------------------
-DOUBLE2::DOUBLE2() : x(0), y(0) 
+DOUBLE2::DOUBLE2() : x(0), y(0)
 {}
 
-DOUBLE2::DOUBLE2(double x, double y) : x(x), y(y) 
+DOUBLE2::DOUBLE2(double x, double y) : x(x), y(y)
 {}
 
 DOUBLE2::DOUBLE2(const D2D1_POINT_2F& d2dPoint) : x(d2dPoint.x), y(d2dPoint.y)
@@ -4448,16 +4448,16 @@ DOUBLE2::DOUBLE2(const D2D1_POINT_2F& d2dPoint) : x(d2dPoint.x), y(d2dPoint.y)
 
 DOUBLE2 operator*(double factor, DOUBLE2 right)
 {
-	return DOUBLE2(right.x * factor, right.y * factor); 
+	return DOUBLE2(right.x * factor, right.y * factor);
 }
 
-std::ostream& operator<<(std::ostream& os, DOUBLE2 right) 
+std::ostream& operator<<(std::ostream& os, DOUBLE2 right)
 {
 	os << "DOUBLE2( " << right.x << ", " << right.y << " )";
 	return os;
 }
 
-std::wostream& operator<<(std::wostream& wos, DOUBLE2 right) 
+std::wostream& operator<<(std::wostream& wos, DOUBLE2 right)
 {
 	wos << L"DOUBLE2( " << right.x << L", " << right.y << L" )";
 	return wos;
@@ -4465,20 +4465,20 @@ std::wostream& operator<<(std::wostream& wos, DOUBLE2 right)
 
 DOUBLE2 Lerp(DOUBLE2 from, DOUBLE2 to, double lambda)
 {
-    return from + (to-from) * lambda;
+	return from + (to - from) * lambda;
 }
 
 DOUBLE2& DOUBLE2::operator=(DOUBLE2& other)
 {
 	if (&other != this)			// check for self assignment
 	{
- 		x = other.x;
+		x = other.x;
 		y = other.y;
 	}
 
 	return *this;
 }
-   
+
 DOUBLE2& DOUBLE2::operator=(D2D1_POINT_2F other)
 {
 	x = other.x;
@@ -4489,17 +4489,17 @@ DOUBLE2& DOUBLE2::operator=(D2D1_POINT_2F other)
 
 DOUBLE2 DOUBLE2::operator+(DOUBLE2 other)
 {
-    return DOUBLE2(x + other.x, y + other.y);
+	return DOUBLE2(x + other.x, y + other.y);
 }
 
 DOUBLE2 DOUBLE2::operator-(DOUBLE2 other)
 {
-    return DOUBLE2(x - other.x, y - other.y);
+	return DOUBLE2(x - other.x, y - other.y);
 }
 
 DOUBLE2 DOUBLE2::operator-()
 {
-	return DOUBLE2(-x, -y); 
+	return DOUBLE2(-x, -y);
 }
 
 DOUBLE2 DOUBLE2::operator+()
@@ -4509,24 +4509,24 @@ DOUBLE2 DOUBLE2::operator+()
 
 DOUBLE2 DOUBLE2::operator*(double factor)
 {
-	return DOUBLE2(x * factor, y * factor); 
+	return DOUBLE2(x * factor, y * factor);
 }
 
 DOUBLE2 DOUBLE2::operator/(double divisor)
 {
-	return DOUBLE2(x / divisor, y / divisor); 
+	return DOUBLE2(x / divisor, y / divisor);
 }
 
 void DOUBLE2::operator+=(DOUBLE2 other)
 {
-    x += other.x;
-    y += other.y;
+	x += other.x;
+	y += other.y;
 }
 
 void DOUBLE2::operator-=(DOUBLE2 other)
 {
-    x -= other.x;
-    y -= other.y;
+	x -= other.x;
+	y -= other.y;
 }
 
 void DOUBLE2::operator*=(double factor)
@@ -4543,35 +4543,35 @@ void DOUBLE2::operator/=(double divisor)
 
 bool DOUBLE2::operator==(DOUBLE2 other)
 {
-    return x == other.x && y == other.y;
+	return x == other.x && y == other.y;
 }
 
 bool DOUBLE2::operator!=(DOUBLE2 other)
 {
-    return !(*this == other);
+	return !(*this == other);
 }
 
 bool DOUBLE2::Equals(DOUBLE2 other, double epsilon)
 {
-    return abs(x - other.x) < epsilon && abs(y - other.y) < epsilon;
+	return abs(x - other.x) < epsilon && abs(y - other.y) < epsilon;
 }
 
 D2D1_POINT_2F DOUBLE2::ToPoint2F()
 {
-    D2D1_POINT_2F p;
-    p.x = (FLOAT) x;
-    p.y = FLOAT(y);
-    return p;
+	D2D1_POINT_2F p;
+	p.x = (FLOAT)x;
+	p.y = FLOAT(y);
+	return p;
 }
 
 double DOUBLE2::DotProduct(DOUBLE2 other)
-{ 
+{
 	return x * other.x + y * other.y;
 }
 
 double DOUBLE2::Determinant(DOUBLE2 other)
-{ 
-	return x * other.y - y * other.x; 
+{
+	return x * other.y - y * other.x;
 }
 
 String DOUBLE2::ToString()
@@ -4580,31 +4580,31 @@ String DOUBLE2::ToString()
 }
 
 double DOUBLE2::Norm()
-{ 
-	return Length(); 
+{
+	return Length();
 }
 
 double DOUBLE2::Length()
-{ 
-	return sqrt(x * x + y * y); 
+{
+	return sqrt(x * x + y * y);
 }
 
 double DOUBLE2::AngleWith(DOUBLE2 other)
-{ 
+{
 	double angleA = atan2(y, x);
 	double angleB = atan2(other.y, other.x);
 	return angleB - angleA;
 }
 
-DOUBLE2 DOUBLE2::Normalized(double epsilon) 
-{ 
+DOUBLE2 DOUBLE2::Normalized(double epsilon)
+{
 	double length = Length();
 	if (length < epsilon) return DOUBLE2(0, 0);
 	else return DOUBLE2(x / length, y / length);
 }
 
 DOUBLE2 DOUBLE2::Orthogonal()
-{ 
+{
 	return DOUBLE2(-y, x);
 }
 
@@ -4612,33 +4612,33 @@ DOUBLE2 DOUBLE2::Orthogonal()
 //------------------------------------------------------------------------------
 // MATRIX3X2 Constructors, friend operators, operators, methods, static methods
 //------------------------------------------------------------------------------
-MATRIX3X2::MATRIX3X2(DOUBLE2 dirX, DOUBLE2 dirY, DOUBLE2 orig) : dirX(dirX), dirY(dirY), orig(orig) 
+MATRIX3X2::MATRIX3X2(DOUBLE2 dirX, DOUBLE2 dirY, DOUBLE2 orig) : dirX(dirX), dirY(dirY), orig(orig)
 {}
 
 MATRIX3X2::MATRIX3X2(double e1X, double e1Y, double e2X, double e2Y, double oX, double oY) : dirX(e1X, e1Y), dirY(e2X, e2Y), orig(oX, oY)
 {}
 
-MATRIX3X2::MATRIX3X2(const MATRIX3X2& sourceRef) : dirX(sourceRef.dirX), dirY(sourceRef.dirY), orig(sourceRef.orig) 
+MATRIX3X2::MATRIX3X2(const MATRIX3X2& sourceRef) : dirX(sourceRef.dirX), dirY(sourceRef.dirY), orig(sourceRef.orig)
 {}
 
 MATRIX3X2::MATRIX3X2(const Matrix3x2F& mat) : dirX(mat._11, mat._12), dirY(mat._21, mat._22), orig(mat._31, mat._32)
 {}
 
-MATRIX3X2 operator*(MATRIX3X2 matrix1, MATRIX3X2 matrix2) 
-{ 
-	return MATRIX3X2(	DOUBLE2(matrix1.dirX.x * matrix2.dirX.x + matrix1.dirX.y * matrix2.dirY.x, matrix1.dirX.x * matrix2.dirX.y + matrix1.dirX.y * matrix2.dirY.y),
-						DOUBLE2(matrix1.dirY.x * matrix2.dirX.x + matrix1.dirY.y * matrix2.dirY.x, matrix1.dirY.x * matrix2.dirX.y + matrix1.dirY.y * matrix2.dirY.y),
-						DOUBLE2(matrix1.orig.x * matrix2.dirX.x + matrix1.orig.y * matrix2.dirY.x + matrix2.orig.x, matrix1.orig.x * matrix2.dirX.y + matrix1.orig.y * matrix2.dirY.y + matrix2.orig.y)	);
+MATRIX3X2 operator*(MATRIX3X2 matrix1, MATRIX3X2 matrix2)
+{
+	return MATRIX3X2(DOUBLE2(matrix1.dirX.x * matrix2.dirX.x + matrix1.dirX.y * matrix2.dirY.x, matrix1.dirX.x * matrix2.dirX.y + matrix1.dirX.y * matrix2.dirY.y),
+		DOUBLE2(matrix1.dirY.x * matrix2.dirX.x + matrix1.dirY.y * matrix2.dirY.x, matrix1.dirY.x * matrix2.dirX.y + matrix1.dirY.y * matrix2.dirY.y),
+		DOUBLE2(matrix1.orig.x * matrix2.dirX.x + matrix1.orig.y * matrix2.dirY.x + matrix2.orig.x, matrix1.orig.x * matrix2.dirX.y + matrix1.orig.y * matrix2.dirY.y + matrix2.orig.y));
 }
 
-std::ostream& operator<<(std::ostream& os, MATRIX3X2 matrix) 
+std::ostream& operator<<(std::ostream& os, MATRIX3X2 matrix)
 {
 	os << "MATRIX3X2( " << matrix.dirX.x << ", " << matrix.dirX.y << ", " << matrix.dirY.x << ", " << matrix.dirY.y << ", " << matrix.orig.x << ", " << matrix.orig.y << " )";
 
 	return os;
 }
 
-std::wostream& operator<<(std::wostream& wos, MATRIX3X2 matrix) 
+std::wostream& operator<<(std::wostream& wos, MATRIX3X2 matrix)
 {
 	wos << L"MATRIX3X2( " << matrix.dirX.x << L", " << matrix.dirX.y << L", " << matrix.dirY.x << L", " << matrix.dirY.y << L", " << matrix.orig.x << L", " << matrix.orig.y << L" )";
 
@@ -4652,7 +4652,7 @@ DOUBLE2 MATRIX3X2::TransformVector(DOUBLE2 vector)
 
 DOUBLE2 MATRIX3X2::TransformPoint(DOUBLE2 point)
 {
-	return orig + TransformVector(point - DOUBLE2(0,0));
+	return orig + TransformVector(point - DOUBLE2(0, 0));
 }
 
 double MATRIX3X2::Determinant()
@@ -4661,16 +4661,16 @@ double MATRIX3X2::Determinant()
 }
 
 MATRIX3X2 MATRIX3X2::Inverse()
-{ 
+{
 	//calculate derminant
 	double det = Determinant();
 	//1)calculate matrix of minors
-	//2)Use the alternating law of signs to produce the matrix of cofactors 
+	//2)Use the alternating law of signs to produce the matrix of cofactors
 	//3)Transpose
 	//4)the inverse matrix is 1/Determinant * the resulting matrix
-	return MATRIX3X2(	DOUBLE2(+dirY.y, -dirX.y) / det,
-						DOUBLE2(-dirY.x, +dirX.x) / det,
-						DOUBLE2(dirY.x * orig.y - dirY.y * orig.x, -(dirX.x * orig.y - dirX.y * orig.x)) / det  );
+	return MATRIX3X2(DOUBLE2(+dirY.y, -dirX.y) / det,
+		DOUBLE2(-dirY.x, +dirX.x) / det,
+		DOUBLE2(dirY.x * orig.y - dirY.y * orig.x, -(dirX.x * orig.y - dirX.y * orig.x)) / det);
 }
 
 bool MATRIX3X2::Equals(MATRIX3X2 p, double epsilon)
@@ -4688,16 +4688,16 @@ bool MATRIX3X2::operator!=(MATRIX3X2 other)
 	return !(*this == other);
 }
 
-Matrix3x2F MATRIX3X2::ToMatrix3x2F() 
+Matrix3x2F MATRIX3X2::ToMatrix3x2F()
 {
 	Matrix3x2F mat;
 
-	mat._11 = (FLOAT) dirX.x;
-	mat._12 = (FLOAT) dirX.y;
-	mat._21 = (FLOAT) dirY.x;
-	mat._22 = (FLOAT) dirY.y;
-	mat._31 = (FLOAT) orig.x;
-	mat._32 = (FLOAT) orig.y;
+	mat._11 = (FLOAT)dirX.x;
+	mat._12 = (FLOAT)dirX.y;
+	mat._21 = (FLOAT)dirY.x;
+	mat._22 = (FLOAT)dirY.y;
+	mat._31 = (FLOAT)orig.x;
+	mat._32 = (FLOAT)orig.y;
 
 	return mat;
 }
@@ -4718,7 +4718,7 @@ void MATRIX3X2::SetAsRotate(double radians)
 {
 	dirX = DOUBLE2(cos(radians), sin(radians));
 	dirY = DOUBLE2(-sin(radians), cos(radians));
-	orig = DOUBLE2(0,0);
+	orig = DOUBLE2(0, 0);
 }
 void MATRIX3X2::SetAsTranslate(double tx, double ty)
 {

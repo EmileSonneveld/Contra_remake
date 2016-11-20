@@ -7,26 +7,26 @@
 #include "ObjectBaseList.h"
 
 //-----------------------------------------------------
-// EnemySniper Class									
+// EnemySniper Class
 //-----------------------------------------------------
-class EnemySniper: public ObjectBase
+class EnemySniper : public ObjectBase
 {
 public:
-	EnemySniper(DOUBLE2 pos);				// Constructor
-	virtual ~EnemySniper();		// Destructor
+	EnemySniper(DOUBLE2 pos);
+	virtual ~EnemySniper();
 
 	//-------------------------------------------------
-	// Own methods								
+	// Own methods
 	//-------------------------------------------------
-	virtual void Tick(double deltaTime );
+	virtual void Tick(double deltaTime);
 	virtual void Paint();
-	virtual void CollideWith( ObjectBase *colliderptr, int otherType);
-	void SetPlayerPtr(ObjectBase *playerPtr){m_PlayerPtr= playerPtr;}
-	int Sign(double getal){ return (getal > 0) - (getal < 0); }
+	virtual void CollideWith(ObjectBase *colliderptr);
+	void SetPlayerPtr(ObjectBase *playerPtr) { m_PlayerPtr = playerPtr; }
+	int Sign(double getal) { return (getal > 0) - (getal < 0); }
 
-private: 
+private:
 	//-------------------------------------------------
-	// Datamembers								
+	// Datamembers
 	//-------------------------------------------------
 	static Bitmap *m_BmpSpritePtr;
 
@@ -37,22 +37,22 @@ private:
 
 	int m_AnimationFrame;
 	double m_TimeToDie;
-	
+
 	double m_ShootCounter;
 
 	ObjectBase *m_PlayerPtr;
 
 	int m_State; // +/- idem aan Player
-	static const int STATE_NORMAL= 0;
-	static const int STATE_SHOOTING	= 1;
-	static const int STATE_DIE   = 5;
+	static const int STATE_NORMAL = 0;
+	static const int STATE_SHOOTING = 1;
+	static const int STATE_DIE = 5;
 
 	// -------------------------
-	// Disabling default copy constructor and default 
+	// Disabling default copy constructor and default
 	// assignment operator.
 	// -------------------------
-	EnemySniper(const EnemySniper& yRef);									
-	EnemySniper& operator=(const EnemySniper& yRef);	
+	EnemySniper(const EnemySniper& yRef);
+	EnemySniper& operator=(const EnemySniper& yRef);
 };
 
- 
+

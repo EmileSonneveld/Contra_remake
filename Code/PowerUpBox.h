@@ -3,31 +3,30 @@
 //-----------------------------------------------------
 // Include Files
 //-----------------------------------------------------
-//#include "GameEngine.h" // zit al in ObjectBaseList
+#include "GameEngine.h"
 #include "ObjectBaseList.h"
 #include "Player.h"
 
 //-----------------------------------------------------
-// PowerUpBox Class									
+// PowerUpBox Class
 //-----------------------------------------------------
-class PowerUpBox: public ObjectBase
+class PowerUpBox : public ObjectBase
 {
 public:
-	PowerUpBox(DOUBLE2 pos, int type);				// Constructor
-	virtual ~PowerUpBox();		// Destructor
+	PowerUpBox(DOUBLE2 pos, int type);
+	virtual ~PowerUpBox();
 
 	//-------------------------------------------------
-	// Own methods								
+	// Own methods
 	//-------------------------------------------------
-	virtual void Tick(double deltaTime );
+	virtual void Tick(double deltaTime);
 	virtual void Paint();
-	virtual void CollideWith( ObjectBase *colliderptr, int otherType);
-	//void SetPlayerPtr(ObjectBase *playerPtr){m_PlayerPtr= playerPtr;}
-	void SetPlayerPtr(Player *playerPtr){m_PlayerPtr= playerPtr;}
+	virtual void CollideWith(ObjectBase *colliderptr);
+	void SetPlayerPtr(Player *playerPtr) { m_PlayerPtr = playerPtr; }
 
-private: 
+private:
 	//-------------------------------------------------
-	// Datamembers								
+	// Datamembers
 	//-------------------------------------------------
 	static Bitmap *m_BmpSpritePtr;
 
@@ -39,19 +38,19 @@ private:
 
 	// Power up's constants
 	int m_BulletType; // eigenlijk powerUpType
-	static const int BULLET_NORMAL		= 0;
-	static const int BULLET_MITRAILLEUR	= 1;
-	static const int BULLET_SUPER		= 2;
-	static const int BULLET_LAZER		= 3;
-	static const int BULLET_FLAME		= 4;
+	static const int BULLET_NORMAL = 0;
+	static const int BULLET_MITRAILLEUR = 1;
+	static const int BULLET_SUPER = 2;
+	static const int BULLET_LAZER = 3;
+	static const int BULLET_FLAME = 4;
 
 
 	// -------------------------
-	// Disabling default copy constructor and default 
+	// Disabling default copy constructor and default
 	// assignment operator.
 	// -------------------------
-	PowerUpBox(const PowerUpBox& yRef);									
-	PowerUpBox& operator=(const PowerUpBox& yRef);	
+	PowerUpBox(const PowerUpBox& yRef);
+	PowerUpBox& operator=(const PowerUpBox& yRef);
 };
 
- 
+

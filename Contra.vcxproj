@@ -79,7 +79,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Code\AbstractGame.h" />
-    <ClInclude Include="Code\BosSniper.h" />
+    <ClInclude Include="Code\HiddenSniper.h" />
     <ClInclude Include="Code\Box.h" />
     <ClInclude Include="Code\Bridge.h" />
     <ClInclude Include="Code\Bullet.h" />
@@ -100,7 +100,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Code\AbstractGame.cpp" />
-    <ClCompile Include="Code\BosSniper.cpp" />
+    <ClCompile Include="Code\HiddenSniper.cpp" />
     <ClCompile Include="Code\Box.cpp" />
     <ClCompile Include="Code\Bridge.cpp" />
     <ClCompile Include="Code\Bullet.cpp" />

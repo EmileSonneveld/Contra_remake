@@ -8,35 +8,34 @@
 #include "Player.h"
 
 //-----------------------------------------------------
-// PowerUp Class									
+// PowerUp Class
 //-----------------------------------------------------
-class PowerUp: public ObjectBase
+class PowerUp : public ObjectBase
 {
 public:
-	PowerUp(DOUBLE2 pos, int type);	// Constructor
-	virtual ~PowerUp();		// Destructor
+	PowerUp(DOUBLE2 pos, int type);
+	virtual ~PowerUp();
 
 	//-------------------------------------------------
 	// Own methods
 	//-------------------------------------------------
-	virtual void Tick(double deltaTime );
+	virtual void Tick(double deltaTime);
 	virtual void Paint();
-	virtual void CollideWith( ObjectBase *colliderptr, int otherType);
-	void SetPlayerPtr(Player *playerPtr){m_PlayerPtr= playerPtr;}
-	//void SetPlayerPtr(ObjectBase *playerPtr){m_PlayerPtr= playerPtr;}
+	virtual void CollideWith(ObjectBase *colliderptr);
+	void SetPlayerPtr(Player *playerPtr) { m_PlayerPtr = playerPtr; }
 
-private: 
+private:
 	//-------------------------------------------------
 	// Datamembers
 	//-------------------------------------------------
 
 	// Power up's constants
 	int m_BulletType; // eigenlijk powerUpType
-	static const int BULLET_NORMAL		= 0;
-	static const int BULLET_MITRAILLEUR	= 1;
-	static const int BULLET_SUPER		= 2;
-	static const int BULLET_LAZER		= 3;
-	static const int BULLET_FLAME		= 4;
+	static const int BULLET_NORMAL = 0;
+	static const int BULLET_MITRAILLEUR = 1;
+	static const int BULLET_SUPER = 2;
+	static const int BULLET_LAZER = 3;
+	static const int BULLET_FLAME = 4;
 
 
 	static Bitmap *m_BmpSpritePtr;
@@ -54,9 +53,9 @@ private:
 	double ReturnGoodLen(double getal1, double getal2, double centerXY);
 
 	// -------------------------
-	// Disabling default copy constructor and default 
+	// Disabling default copy constructor and default
 	// assignment operator.
 	// -------------------------
-	PowerUp(const PowerUp& yRef);									
-	PowerUp& operator=(const PowerUp& yRef);	
+	PowerUp(const PowerUp& yRef);
+	PowerUp& operator=(const PowerUp& yRef);
 };

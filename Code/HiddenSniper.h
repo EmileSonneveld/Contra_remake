@@ -3,29 +3,29 @@
 //-----------------------------------------------------
 // Include Files
 //-----------------------------------------------------
-//#include "GameEngine.h" // zit al in ObjectBaseList
+#include "GameEngine.h"
 #include "ObjectBaseList.h"
 
 //-----------------------------------------------------
-// BosSniper Class									
+// BosSniper Class
 //-----------------------------------------------------
-class BosSniper: public ObjectBase
+class HiddenSniper : public ObjectBase
 {
 public:
-	BosSniper(DOUBLE2 pos);		// Constructor
-	virtual ~BosSniper();		// Destructor
+	HiddenSniper(DOUBLE2 pos);
+	virtual ~HiddenSniper();
 
 	//-------------------------------------------------
-	// Own methods								
+	// Own methods
 	//-------------------------------------------------
-	virtual void Tick(double deltaTime );
+	virtual void Tick(double deltaTime);
 	virtual void Paint();
-	virtual void CollideWith( ObjectBase *colliderptr, int otherType);
-	void SetPlayerPtr(ObjectBase *playerPtr){m_PlayerPtr= playerPtr;}
+	virtual void CollideWith(ObjectBase *colliderptr);
+	void SetPlayerPtr(ObjectBase *playerPtr) { m_PlayerPtr = playerPtr; }
 
-private: 
+private:
 	//-------------------------------------------------
-	// Datamembers								
+	// Datamembers
 	//-------------------------------------------------
 	static Bitmap *m_BmpSpritePtr;
 
@@ -38,9 +38,9 @@ private:
 	ObjectBase *m_PlayerPtr;
 
 	// -------------------------
-	// Disabling default copy constructor and default 
+	// Disabling default copy constructor and default
 	// assignment operator.
 	// -------------------------
-	BosSniper(const BosSniper& yRef);									
-	BosSniper& operator=(const BosSniper& yRef);	
+	HiddenSniper(const HiddenSniper& yRef);
+	HiddenSniper& operator=(const HiddenSniper& yRef);
 };

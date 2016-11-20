@@ -3,41 +3,41 @@
 //-----------------------------------------------------
 // Include Files
 //-----------------------------------------------------
-//#include "GameEngine.h" // zit al in ObjectBaseList
+#include "GameEngine.h"
 #include "ObjectBaseList.h"
 #include "Player.h"
 
 //-----------------------------------------------------
-// FlyingPuwerUp Class									
+// FlyingPuwerUp Class
 //-----------------------------------------------------
-class FlyingPuwerUp: public ObjectBase
+class FlyingPuwerUp : public ObjectBase
 {
 public:
-	FlyingPuwerUp(DOUBLE2 pos, int powerUpType);		// Constructor
-	virtual ~FlyingPuwerUp();		// Destructor
+	FlyingPuwerUp(DOUBLE2 pos, int powerUpType);
+	virtual ~FlyingPuwerUp();
 
 	//-------------------------------------------------
-	// Own methods								
+	// Own methods
 	//-------------------------------------------------
-	virtual void Tick(double deltaTime );
+	virtual void Tick(double deltaTime);
 	virtual void Paint();
-	virtual void CollideWith( ObjectBase *colliderptr, int otherType);
-	void SetPlayerPtr(Player *playerPtr){m_PlayerPtr= playerPtr;}
-	int Sign(double getal){ return (getal > 0) - (getal < 0); }
+	virtual void CollideWith(ObjectBase *colliderptr);
+	void SetPlayerPtr(Player *playerPtr) { m_PlayerPtr = playerPtr; }
+	int Sign(double getal) { return (getal > 0) - (getal < 0); }
 
-private: 
+private:
 	//-------------------------------------------------
-	// Datamembers								
+	// Datamembers
 	//-------------------------------------------------
 	static Bitmap *m_BmpSpritePtr;
 
 	int m_PowerUpType; // eigenlijk powerUpType
-	static const int BULLET_NORMAL		= 0;
-	static const int BULLET_MITRAILLEUR	= 1;
-	static const int BULLET_SUPER		= 2;
-	static const int BULLET_LAZER		= 3;
-	static const int BULLET_FLAME		= 4;
-	static const int BULLET_R			= 5; // Score ofzo?
+	static const int BULLET_NORMAL = 0;
+	static const int BULLET_MITRAILLEUR = 1;
+	static const int BULLET_SUPER = 2;
+	static const int BULLET_LAZER = 3;
+	static const int BULLET_FLAME = 4;
+	static const int BULLET_R = 5; // Score ofzo?
 
 
 	double m_AnimationTick;
@@ -50,11 +50,11 @@ private:
 	Player *m_PlayerPtr;
 
 	// -------------------------
-	// Disabling default copy constructor and default 
+	// Disabling default copy constructor and default
 	// assignment operator.
 	// -------------------------
-	FlyingPuwerUp(const FlyingPuwerUp& yRef);									
-	FlyingPuwerUp& operator=(const FlyingPuwerUp& yRef);	
+	FlyingPuwerUp(const FlyingPuwerUp& yRef);
+	FlyingPuwerUp& operator=(const FlyingPuwerUp& yRef);
 };
 
- 
+

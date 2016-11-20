@@ -11,19 +11,19 @@
 // Include Files
 //-----------------------------------------------------------------
 
-//#include "../Resource.h"	
+//#include "../Resource.h"
 #include "GameEngine.h"
 #include "AbstractGame.h"
 #include "ObjectBaseList.h"
 
-#include "Player.h" 
+#include "Player.h"
 
 //-----------------------------------------------------------------
-// Contra Class																
+// Contra Class
 //-----------------------------------------------------------------
 class Contra : public AbstractGame, public Callable
 {
-public:				
+public:
 	//---------------------------
 	// Constructor(s)
 	//---------------------------
@@ -39,7 +39,7 @@ public:
 	//---------------------------
 
 	void GameInitialize(HINSTANCE hInstance);
-	void GameStart();				
+	void GameStart();
 	void GameEnd();
 	void MouseButtonAction(bool isLeft, bool isDown, int x, int y, WPARAM wParam);
 	//void MouseMove(int x, int y, WPARAM wParam);
@@ -67,12 +67,12 @@ private:
 	double m_GameSize;
 
 	// Spawners
-	static const int NUM_SPAWNERS= 3;
+	static const int NUM_SPAWNERS = 3;
 	DOUBLE2 m_SpawnersArr[NUM_SPAWNERS];
 	double m_SpawnTime;
 
 	Player *m_PlayerPtr;
-	
+
 	DOUBLE2 m_PosCamera, m_LevelMax, m_MousePos;
 
 	ObjectList * m_ObjectListPtr;
@@ -90,14 +90,14 @@ private:
 
 	// Power up's constants
 	int m_BulletType; // eigenlijk powerUpType
-	static const int BULLET_NORMAL		= 0;
-	static const int BULLET_MITRAILLEUR	= 1;
-	static const int BULLET_SUPER		= 2;
-	static const int BULLET_LAZER		= 3;
-	static const int BULLET_FLAME		= 4;
-	static const int BULLET_R			= 5; // Score ofzo?
+	static const int BULLET_NORMAL = 0;
+	static const int BULLET_MITRAILLEUR = 1;
+	static const int BULLET_SUPER = 2;
+	static const int BULLET_LAZER = 3;
+	static const int BULLET_FLAME = 4;
+	static const int BULLET_R = 5; // Score ofzo?
 
-	void PlaceEnemys(ObjectList * objectListPtr);
+	void PlaceEnemies(ObjectList * objectListPtr);
 
 	// -------------------------
 	// Disabling default copy constructor and default assignment operator.

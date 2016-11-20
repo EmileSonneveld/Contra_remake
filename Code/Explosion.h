@@ -7,25 +7,25 @@
 #include "ObjectBaseList.h"
 
 //-----------------------------------------------------
-// Explosion Class									
+// Explosion Class
 //-----------------------------------------------------
-class Explosion: public ObjectBase
+class Explosion : public ObjectBase
 {
 public:
-	Explosion(DOUBLE2 pos);		// Constructor
-	Explosion(DOUBLE2 pos, int num);		// Constructor
-	virtual ~Explosion();		// Destructor
+	Explosion(DOUBLE2 pos);
+	Explosion(DOUBLE2 pos, int num);
+	virtual ~Explosion();
 
 	//-------------------------------------------------
-	// Own methods								
+	// Own methods
 	//-------------------------------------------------
-	void Tick(double deltaTime );
+	void Tick(double deltaTime);
 	virtual void Paint();
-	virtual void CollideWith( ObjectBase *colliderptr, int team);
+	virtual void CollideWith(ObjectBase *colliderptr);
 
-private: 
+private:
 	//-------------------------------------------------
-	// Datamembers								
+	// Datamembers
 	//-------------------------------------------------
 	static Bitmap *m_BmpSprite1Ptr;
 	static Bitmap *m_BmpSprite2Ptr;
@@ -35,11 +35,11 @@ private:
 	double m_AnimationTik;
 
 	// -------------------------
-	// Disabling default copy constructor and default 
+	// Disabling default copy constructor and default
 	// assignment operator.
 	// -------------------------
-	Explosion(const Explosion& yRef);									
-	Explosion& operator=(const Explosion& yRef);	
+	Explosion(const Explosion& yRef);
+	Explosion& operator=(const Explosion& yRef);
 };
 
- 
+

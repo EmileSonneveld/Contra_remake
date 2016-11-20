@@ -3,29 +3,29 @@
 //-----------------------------------------------------
 // Include Files
 //-----------------------------------------------------
-//#include "GameEngine.h" // zit al in ObjectBaseList
+#include "GameEngine.h"
 #include "ObjectBaseList.h"
 
 //-----------------------------------------------------
-// EndBoss Class									
+// EndBoss Class
 //-----------------------------------------------------
-class EndBoss: public ObjectBase
+class EndBoss : public ObjectBase
 {
 public:
-	EndBoss(DOUBLE2 pos);				// Constructor
-	virtual ~EndBoss();		// Destructor
+	EndBoss(DOUBLE2 pos);
+	virtual ~EndBoss();
 
 	//-------------------------------------------------
-	// Own methods								
+	// Own methods
 	//-------------------------------------------------
-	virtual void Tick(double deltaTime );
+	virtual void Tick(double deltaTime);
 	virtual void Paint();
-	virtual void CollideWith( ObjectBase *colliderptr, int otherType);
-	void SetPlayerPtr(ObjectBase *playerPtr){m_PlayerPtr= playerPtr;}
+	virtual void CollideWith(ObjectBase *colliderptr);
+	void SetPlayerPtr(ObjectBase *playerPtr) { m_PlayerPtr = playerPtr; }
 
-private: 
+private:
 	//-------------------------------------------------
-	// Datamembers								
+	// Datamembers
 	//-------------------------------------------------
 	static Bitmap *m_BmpSpritePtr;
 
@@ -39,11 +39,11 @@ private:
 	ObjectBase *m_PlayerPtr;
 
 	// -------------------------
-	// Disabling default copy constructor and default 
+	// Disabling default copy constructor and default
 	// assignment operator.
 	// -------------------------
-	EndBoss(const EndBoss& yRef);									
-	EndBoss& operator=(const EndBoss& yRef);	
+	EndBoss(const EndBoss& yRef);
+	EndBoss& operator=(const EndBoss& yRef);
 };
 
- 
+

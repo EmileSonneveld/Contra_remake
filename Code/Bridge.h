@@ -3,30 +3,30 @@
 //-----------------------------------------------------
 // Include Files
 //-----------------------------------------------------
-//#include "GameEngine.h" // zit al in ObjectBaseList
+#include "GameEngine.h"
 #include "ObjectBaseList.h"
 
 //-----------------------------------------------------
-// Bridge Class									
+// Bridge Class
 //-----------------------------------------------------
-class Bridge: public ObjectBase
+class Bridge : public ObjectBase
 {
 public:
-	Bridge(DOUBLE2 pos);				// Constructor
-	virtual ~Bridge();		// Destructor
+	Bridge(DOUBLE2 pos);
+	virtual ~Bridge();
 
 	//-------------------------------------------------
-	// Own methods								
+	// Own methods
 	//-------------------------------------------------
-	virtual void Tick(double deltaTime );
+	virtual void Tick(double deltaTime);
 	virtual void Paint();
-	virtual void CollideWith( ObjectBase *colliderptr, int otherType);
+	virtual void CollideWith(ObjectBase *colliderptr);
 
-	void SetPlayerPtr(ObjectBase *playerPtr){m_PlayerPtr= playerPtr;}
+	void SetPlayerPtr(ObjectBase *playerPtr) { m_PlayerPtr = playerPtr; }
 
-private: 
+private:
 	//-------------------------------------------------
-	// Datamembers								
+	// Datamembers
 	//-------------------------------------------------
 	static Bitmap *m_BmpSpritePtr;
 
@@ -35,17 +35,17 @@ private:
 	double m_TimePerExplosion;
 	bool m_UnderDestruction;
 
-	static const int PIECES= 4;
+	static const int PIECES = 4;
 	int m_PiecesLeft;
 	//int m_Next;
 
 	ObjectBase *m_PlayerPtr;
 	// -------------------------
-	// Disabling default copy constructor and default 
+	// Disabling default copy constructor and default
 	// assignment operator.
 	// -------------------------
-	Bridge(const Bridge& yRef);									
-	Bridge& operator=(const Bridge& yRef);	
+	Bridge(const Bridge& yRef);
+	Bridge& operator=(const Bridge& yRef);
 };
 
- 
+

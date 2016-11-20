@@ -3,29 +3,29 @@
 //-----------------------------------------------------
 // Include Files
 //-----------------------------------------------------
-//#include "GameEngine.h" // zit al in ObjectBaseList
+#include "GameEngine.h"
 #include "ObjectBaseList.h"
 
 //-----------------------------------------------------
-// EvilTurret Class									
+// EvilTurret Class
 //-----------------------------------------------------
-class EvilTurret: public ObjectBase
+class EvilTurret : public ObjectBase
 {
 public:
-	EvilTurret(DOUBLE2 pos);				// Constructor
-	virtual ~EvilTurret();		// Destructor
+	EvilTurret(DOUBLE2 pos);
+	virtual ~EvilTurret();
 
 	//-------------------------------------------------
-	// Own methods								
+	// Own methods
 	//-------------------------------------------------
-	virtual void Tick(double deltaTime );
+	virtual void Tick(double deltaTime);
 	virtual void Paint();
-	virtual void CollideWith( ObjectBase *colliderptr, int otherType);
-	void SetPlayerPtr(ObjectBase *playerPtr){m_PlayerPtr= playerPtr;}
+	virtual void CollideWith(ObjectBase *colliderptr);
+	void SetPlayerPtr(ObjectBase *playerPtr) { m_PlayerPtr = playerPtr; }
 
-private: 
+private:
 	//-------------------------------------------------
-	// Datamembers								
+	// Datamembers
 	//-------------------------------------------------
 	static Bitmap *m_BmpSpritePtr;
 
@@ -46,11 +46,11 @@ private:
 	ObjectBase *m_PlayerPtr;
 
 	// -------------------------
-	// Disabling default copy constructor and default 
+	// Disabling default copy constructor and default
 	// assignment operator.
 	// -------------------------
-	EvilTurret(const EvilTurret& yRef);									
-	EvilTurret& operator=(const EvilTurret& yRef);	
+	EvilTurret(const EvilTurret& yRef);
+	EvilTurret& operator=(const EvilTurret& yRef);
 };
 
- 
+
